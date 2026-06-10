@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WiFi QR Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --void:#0c0c16; --base:#111120; --surface:#1a1a2c; --raised:#222238; --hover:#2c2c44;
@@ -16,7 +19,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--void);color:var(--t1);min-height:100vh;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{font-family:'Roboto',sans-serif;background:var(--void);color:var(--t1);min-height:100vh;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 
 /* HEADER */
 .hdr{background:var(--base);border-bottom:1px solid var(--border);padding:11px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200}
@@ -281,10 +284,6 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
     <div class="sec">
       <div class="sec-hdr"><span class="sec-lbl">Design</span><span class="sec-line"></span></div>
       <div class="field">
-        <div class="field-lbl"><span>QR size</span><span class="field-hint" id="lbl-sz">280 px</span></div>
-        <input type="range" id="f-sz" min="180" max="380" step="20" value="280" oninput="onSz(this.value)">
-      </div>
-      <div class="field">
         <div class="field-lbl">Dot style — how individual QR modules look</div>
         <div class="s-grid" id="dot-grid"></div>
       </div>
@@ -304,16 +303,6 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
             <div class="swatch" id="sw-bg" style="background:#1a1a2c"></div>
             <div class="c-info"><div class="c-name">Background</div><div class="c-hex" id="hx-bg">#1a1a2c</div></div>
             <input type="color" id="cp-bg" value="#1a1a2c" oninput="onClr('bg',this.value)">
-          </div>
-          <div class="c-btn" onclick="document.getElementById('cp-csq').click()">
-            <div class="swatch" id="sw-csq" style="background:#00c8b8"></div>
-            <div class="c-info"><div class="c-name">Corners</div><div class="c-hex" id="hx-csq">#00c8b8</div></div>
-            <input type="color" id="cp-csq" value="#00c8b8" oninput="onClr('csq',this.value)">
-          </div>
-          <div class="c-btn" onclick="document.getElementById('cp-cdot').click()">
-            <div class="swatch" id="sw-cdot" style="background:#00c8b8"></div>
-            <div class="c-info"><div class="c-name">Corner dots</div><div class="c-hex" id="hx-cdot">#00c8b8</div></div>
-            <input type="color" id="cp-cdot" value="#00c8b8" oninput="onClr('cdot',this.value)">
           </div>
         </div>
       </div>
@@ -361,19 +350,9 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
         <div class="field">
           <div class="field-lbl">Font family</div>
           <div class="f-grid">
-            <button class="f-btn on" data-ff="sys" onclick="setFont('sys')" style="font-family:system-ui">Default</button>
-            <button class="f-btn" data-ff="mono" onclick="setFont('mono')" style="font-family:monospace">Mono</button>
+            <button class="f-btn on" data-ff="sys" onclick="setFont('sys')" style="font-family:'Roboto',sans-serif">Roboto</button>
+            <button class="f-btn" data-ff="mono" onclick="setFont('mono')" style="font-family:'Roboto Mono',monospace">Mono</button>
             <button class="f-btn" data-ff="serif" onclick="setFont('serif')" style="font-family:Georgia,serif">Serif</button>
-          </div>
-        </div>
-        <div class="two-col">
-          <div class="field">
-            <div class="field-lbl"><span>Main size</span><span class="field-hint" id="lbl-msz">16 px</span></div>
-            <input type="range" id="f-msz" min="11" max="30" value="16" oninput="onMSz(this.value)">
-          </div>
-          <div class="field">
-            <div class="field-lbl"><span>Sub size</span><span class="field-hint" id="lbl-ssz">12 px</span></div>
-            <input type="range" id="f-ssz" min="9" max="20" value="12" oninput="onSSz(this.value)">
           </div>
         </div>
         <div class="field">
@@ -454,8 +433,8 @@ const S = {
 };
 
 const FF = {
-  sys:'-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif',
-  mono:'"SF Mono","Fira Code","Consolas",monospace',
+  sys:"'Roboto',sans-serif",
+  mono:"'Roboto Mono',monospace",
   serif:'Georgia,Cambria,"Times New Roman",serif'
 };
 
@@ -669,17 +648,14 @@ function toggle(key) {
 function setPos(pos) { S.pos = pos; document.querySelectorAll('[data-pos]').forEach(b => b.classList.toggle('on', b.dataset.pos === pos)); updLbls(); }
 function setFont(ff) { S.ff = ff; document.querySelectorAll('[data-ff]').forEach(b => b.classList.toggle('on', b.dataset.ff === ff)); updLbls(); }
 
-// ── SLIDERS ──
-function onSz(v)  { S.sz = +v;  document.getElementById('lbl-sz').textContent  = v + ' px'; update(); }
-function onMSz(v) { S.msz = +v; document.getElementById('lbl-msz').textContent = v + ' px'; updLbls(); }
-function onSSz(v) { S.ssz = +v; document.getElementById('lbl-ssz').textContent = v + ' px'; updLbls(); }
-
 // ── COLOURS ──
 function onClr(t, v) {
-  const map = { dots:['sw-dots','hx-dots','dc'], bg:['sw-bg','hx-bg','bc'], csq:['sw-csq','hx-csq','cc'], cdot:['sw-cdot','hx-cdot','cdc'] };
+  const map = { dots:['sw-dots','hx-dots','dc'], bg:['sw-bg','hx-bg','bc'] };
   const [sw, hx, sk] = map[t]; S[sk] = v;
   document.getElementById(sw).style.background = v;
   document.getElementById(hx).textContent = v;
+  // corners and corner-dots always follow the dots color
+  if (t === 'dots') { S.cc = v; S.cdc = v; }
   update();
 }
 function onLClr(t, v) {
@@ -790,13 +766,7 @@ function loadFromHistory_byId(id) {
   document.getElementById('f-ecc').value  = S.ecc;
   document.getElementById('f-mt').value   = S.mt;
   document.getElementById('f-st').value   = S.st;
-  document.getElementById('f-sz').value   = S.sz;
-  document.getElementById('f-msz').value  = S.msz;
-  document.getElementById('f-ssz').value  = S.ssz;
-  document.getElementById('lbl-sz').textContent  = S.sz  + ' px';
-  document.getElementById('lbl-msz').textContent = S.msz + ' px';
-  document.getElementById('lbl-ssz').textContent = S.ssz + ' px';
-  [['cp-dots','sw-dots','hx-dots',S.dc],['cp-bg','sw-bg','hx-bg',S.bc],['cp-csq','sw-csq','hx-csq',S.cc],['cp-cdot','sw-cdot','hx-cdot',S.cdc],['cp-mc','sw-mc','hx-mc',S.mc],['cp-sc','sw-sc','hx-sc',S.sc]].forEach(([inp,sw,hx,v]) => {
+  [['cp-dots','sw-dots','hx-dots',S.dc],['cp-bg','sw-bg','hx-bg',S.bc],['cp-mc','sw-mc','hx-mc',S.mc],['cp-sc','sw-sc','hx-sc',S.sc]].forEach(([inp,sw,hx,v]) => {
     const el = document.getElementById(inp); if(el) el.value = v;
     document.getElementById(sw).style.background = v;
     document.getElementById(hx).textContent = v;
