@@ -385,14 +385,14 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
           <div class="field-lbl">Text colours</div>
           <div class="c-grid">
             <div class="c-btn" onclick="document.getElementById('cp-mc').click()">
-              <div class="swatch" id="sw-mc" style="background:#eeeeff"></div>
-              <div class="c-info"><div class="c-name">Main text</div><div class="c-hex" id="hx-mc">#eeeeff</div></div>
-              <input type="color" id="cp-mc" value="#eeeeff" oninput="onLClr('m',this.value)">
+              <div class="swatch" id="sw-mc" style="background:#000000"></div>
+              <div class="c-info"><div class="c-name">Main text</div><div class="c-hex" id="hx-mc">#000000</div></div>
+              <input type="color" id="cp-mc" value="#000000" oninput="onLClr('m',this.value)">
             </div>
             <div class="c-btn" onclick="document.getElementById('cp-sc').click()">
-              <div class="swatch" id="sw-sc" style="background:#7070a0"></div>
-              <div class="c-info"><div class="c-name">Subtitle text</div><div class="c-hex" id="hx-sc">#7070a0</div></div>
-              <input type="color" id="cp-sc" value="#7070a0" oninput="onLClr('s',this.value)">
+              <div class="swatch" id="sw-sc" style="background:#333333"></div>
+              <div class="c-info"><div class="c-name">Subtitle text</div><div class="c-hex" id="hx-sc">#333333</div></div>
+              <input type="color" id="cp-sc" value="#333333" oninput="onLClr('s',this.value)">
             </div>
           </div>
         </div>
@@ -475,9 +475,10 @@ const S = {
   dc:'#000000', bc:'#ffffff', cc:'#000000', cdc:'#000000', ecc:'M',
   lbls:true, pos:'below',
   mt:'', st:'Scan to connect',
-  msz:16, ssz:12, mc:'#eeeeff', sc:'#7070a0',
+  msz:16, ssz:12, mc:'#000000', sc:'#333333',
   ff:'sys', bold:true
 };
+let _editId = null; // tracks which history entry is currently loaded
 
 const FF = {
   sys:"'Roboto',sans-serif",
@@ -643,6 +644,7 @@ function mkQR() {
     cornersDotOptions: { color: S.cdc, type: 'dot' }
   });
   qr.append(cont);
+  document.getElementById('pv-card').style.background = S.bc;
 }
 
 function wifiStr() {
@@ -661,6 +663,20 @@ function update() {
   updLbls();
 }
 
+function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function wifiLbl(text, color, fontSize) {
+  const sz = fontSize || S.msz;
+  const gap = Math.round(sz * 0.3);
+  return `<span style="display:flex;align-items:center;justify-content:center;gap:${gap}px">` +
+    `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-bottom:1px">` +
+    `<path d="M5 12.55a11 11 0 0 1 14.08 0"/>` +
+    `<path d="M1.42 9a16 16 0 0 1 21.16 0"/>` +
+    `<path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>` +
+    `<circle cx="12" cy="20" r="1.5" fill="${color}" stroke="none"/></svg>` +
+    `<span>${escH(text)}</span></span>`;
+}
+
 function updLbls() {
   S.mt = document.getElementById('f-mt').value;
   S.st = document.getElementById('f-st').value;
@@ -671,16 +687,16 @@ function updLbls() {
   const la = document.getElementById('la');
   const lb = document.getElementById('lb');
   const ls = document.getElementById('ls');
-  la.textContent = lb.textContent = ls.textContent = '';
+  la.innerHTML = lb.innerHTML = ls.innerHTML = '';
   la.removeAttribute('style'); lb.removeAttribute('style'); ls.removeAttribute('style');
   if (!S.lbls) return;
   if (S.pos === 'above') {
-    la.textContent = main; la.style.cssText = mSt;
+    la.innerHTML = wifiLbl(main, S.mc); la.style.cssText = mSt;
   } else if (S.pos === 'below') {
-    lb.textContent = main; lb.style.cssText = mSt;
+    lb.innerHTML = wifiLbl(main, S.mc); lb.style.cssText = mSt;
     ls.textContent = S.st; ls.style.cssText = sSt;
   } else if (S.pos === 'both') {
-    la.textContent = main; la.style.cssText = mSt;
+    la.innerHTML = wifiLbl(main, S.mc); la.style.cssText = mSt;
     lb.textContent = S.st; lb.style.cssText = sSt;
   }
 }
@@ -722,6 +738,37 @@ function getThumb() {
 }
 
 // ── DOWNLOAD PNG ──
+function drawWifiIcon(cx, cx_, cy, sz, color) {
+  // cx_, cy = horizontal center and baseline; sz = font size
+  cx.save();
+  cx.strokeStyle = color; cx.fillStyle = color; cx.lineCap = 'round';
+  const r = [0.22, 0.40, 0.58].map(f => f * sz);
+  const dot = sz * 0.09;
+  const originY = cy; // dot sits at baseline
+  cx.beginPath(); cx.arc(cx_, originY - dot, dot, 0, Math.PI*2); cx.fill();
+  r.forEach(rad => {
+    cx.lineWidth = Math.max(1, sz * 0.08);
+    cx.beginPath();
+    cx.arc(cx_, originY - dot, rad, Math.PI*1.75, Math.PI*1.25, true);
+    cx.stroke();
+  });
+  cx.restore();
+}
+
+function drawIconText(cx, text, y, fontSize, fontWeight, color, canvasW, font) {
+  cx.font = `${fontWeight} ${fontSize}px ${font}`;
+  const tw   = cx.measureText(text).width;
+  const isz  = fontSize;
+  const gap  = fontSize * 0.28;
+  const totW = isz + gap + tw;
+  const startX = canvasW / 2 - totW / 2;
+  drawWifiIcon(cx, startX + isz / 2, y, isz, color);
+  cx.fillStyle = color;
+  cx.textAlign = 'left';
+  cx.fillText(text, startX + isz + gap, y);
+  cx.textAlign = 'center'; // reset
+}
+
 async function dlPNG() {
   if (!qr) return;
   if (!S.ssid.trim()) { showToast('Enter a network name first', 'warn'); return; }
@@ -746,10 +793,10 @@ async function dlPNG() {
     cv.height = img.height + pad * 2 + topH + botH;
     const cx = cv.getContext('2d');
     cx.fillStyle = S.bc; cx.fillRect(0, 0, cv.width, cv.height);
-    if (tTop) { cx.font=`${fw} ${S.msz}px ${FF[S.ff]}`; cx.fillStyle=S.mc; cx.textAlign='center'; cx.fillText(tTop, cv.width/2, pad+S.msz*.85); }
+    if (tTop) drawIconText(cx, tTop, pad + S.msz * .85, S.msz, fw, S.mc, cv.width, FF[S.ff]);
     cx.drawImage(img, pad, pad + topH);
     let by = pad + topH + img.height + 10;
-    if (tBot) { cx.font=`${fw} ${S.msz}px ${FF[S.ff]}`; cx.fillStyle=S.mc; cx.textAlign='center'; cx.fillText(tBot, cv.width/2, by+S.msz*.85); by+=S.msz+8; }
+    if (tBot) { drawIconText(cx, tBot, by + S.msz * .85, S.msz, fw, S.mc, cv.width, FF[S.ff]); by += S.msz + 8; }
     if (tSub) { cx.font=`${S.ssz}px ${FF[S.ff]}`; cx.fillStyle=S.sc; cx.textAlign='center'; cx.fillText(tSub, cv.width/2, by+S.ssz*.85); }
     cv.toBlob(blob => {
       const dlURL = URL.createObjectURL(blob);
@@ -793,11 +840,24 @@ function saveHistory(arr) { try { localStorage.setItem(HIST_KEY, JSON.stringify(
 
 function saveToHistory() {
   if (!S.ssid.trim()) { showToast('Enter a network name first', 'warn'); return; }
-  const entry = { id:Date.now(), ssid:S.ssid, sec:S.sec, thumb:getThumb(), settings:JSON.parse(JSON.stringify(S)), savedAt:new Date().toLocaleString() };
-  const hist = getHistory();
+  const thumb = getThumb();
+  const hist  = getHistory();
+  if (_editId !== null) {
+    // Update the existing entry instead of duplicating
+    const idx = hist.findIndex(e => e.id === _editId);
+    if (idx !== -1) {
+      hist[idx] = { ...hist[idx], ssid:S.ssid, sec:S.sec, thumb, settings:JSON.parse(JSON.stringify(S)), savedAt:new Date().toLocaleString() };
+      saveHistory(hist);
+      showToast('Updated ✓', 'ok');
+      return;
+    }
+  }
+  // New entry
+  const entry = { id:Date.now(), ssid:S.ssid, sec:S.sec, thumb, settings:JSON.parse(JSON.stringify(S)), savedAt:new Date().toLocaleString() };
   hist.unshift(entry);
   if (hist.length > 30) hist.pop();
   saveHistory(hist);
+  _editId = entry.id; // track for future updates in this session
   showToast('Saved to history ✓', 'ok');
 }
 
@@ -828,6 +888,7 @@ function loadFromHistory_byId(id) {
   document.querySelectorAll('[data-ff]').forEach(b => b.classList.toggle('on', b.dataset.ff===S.ff));
   update();
   showView('gen');
+  _editId = entry.id;
   showToast('Settings loaded', 'ok');
 }
 
