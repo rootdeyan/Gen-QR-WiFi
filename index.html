@@ -107,7 +107,7 @@ select option{background:var(--surface)}
 .c-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .c-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 8px;display:flex;align-items:center;gap:7px;cursor:pointer;position:relative;transition:border-color .15s}
 .c-btn:hover{border-color:var(--border-h)}
-.c-btn input[type="color"]{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.c-btn input[type="color"]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;padding:0;-webkit-appearance:none}
 .swatch{width:20px;height:20px;border-radius:4px;border:1px solid rgba(255,255,255,.13);flex-shrink:0;transition:transform .12s}
 .c-btn:hover .swatch{transform:scale(1.1)}
 .c-info{flex:1;min-width:0;overflow:hidden}
@@ -196,10 +196,12 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
 .pct-btn:hover{background:var(--raised);color:var(--t1)}
 /* PRINT OUTPUT */
 #print-area{display:none}
+@page{margin:0;size:auto}
 @media print{
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  html,body{background:#fff!important;margin:0!important;padding:0!important}
   body>*{display:none!important}
-  #print-area{display:flex!important;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:12mm;box-sizing:border-box}
+  #print-area{display:flex!important;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:15mm;box-sizing:border-box;background:#fff!important}
   #pa-qr{display:block;max-width:100%;border-radius:4px}
   #pa-above,#pa-below,#pa-sub{width:100%;text-align:center;word-break:break-word}
   #pa-above{margin-bottom:7mm}
@@ -217,6 +219,7 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
   .guide-inner{padding:24px 22px 20px}
   .guide-footer{padding:0 22px 22px}
   .guide-title{font-size:18px}
+  input[type="text"],input[type="password"],select,input[type="number"]{font-size:16px}
 }
 @media(max-width:420px){
   .hdr{padding:10px 12px;gap:8px}
@@ -228,6 +231,7 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
   .btn{justify-content:center}
   .tab-btn{padding:5px 10px;font-size:11px}
   .hist-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  input[type="text"],input[type="password"],select,input[type="number"]{font-size:16px}
   .guide-modal{border-radius:14px}
 }
 </style>
@@ -317,14 +321,14 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
         <div class="field-lbl">Colours</div>
         <div class="c-grid">
           <div class="c-btn" onclick="document.getElementById('cp-dots').click()">
-            <div class="swatch" id="sw-dots" style="background:#ffffff"></div>
-            <div class="c-info"><div class="c-name">Dots</div><div class="c-hex" id="hx-dots">#ffffff</div></div>
-            <input type="color" id="cp-dots" value="#ffffff" oninput="onClr('dots',this.value)">
+            <div class="swatch" id="sw-dots" style="background:#000000"></div>
+            <div class="c-info"><div class="c-name">Dots</div><div class="c-hex" id="hx-dots">#000000</div></div>
+            <input type="color" id="cp-dots" value="#000000" oninput="onClr('dots',this.value)">
           </div>
           <div class="c-btn" onclick="document.getElementById('cp-bg').click()">
-            <div class="swatch" id="sw-bg" style="background:#1a1a2c"></div>
-            <div class="c-info"><div class="c-name">Background</div><div class="c-hex" id="hx-bg">#1a1a2c</div></div>
-            <input type="color" id="cp-bg" value="#1a1a2c" oninput="onClr('bg',this.value)">
+            <div class="swatch" id="sw-bg" style="background:#ffffff;border-color:rgba(0,0,0,0.15)"></div>
+            <div class="c-info"><div class="c-name">Background</div><div class="c-hex" id="hx-bg">#ffffff</div></div>
+            <input type="color" id="cp-bg" value="#ffffff" oninput="onClr('bg',this.value)">
           </div>
         </div>
       </div>
@@ -468,7 +472,7 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
 const S = {
   ssid:'', pw:'', sec:'WPA', hidden:false,
   sz:280, dot:'rounded', corner:'extra-rounded',
-  dc:'#ffffff', bc:'#1a1a2c', cc:'#00c8b8', cdc:'#00c8b8', ecc:'M',
+  dc:'#000000', bc:'#ffffff', cc:'#000000', cdc:'#000000', ecc:'M',
   lbls:true, pos:'below',
   mt:'', st:'Scan to connect',
   msz:16, ssz:12, mc:'#eeeeff', sc:'#7070a0',
