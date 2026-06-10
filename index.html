@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,7 +48,7 @@ body{font-family:'Roboto',sans-serif;background:var(--void);color:var(--t1);min-
 /* PREVIEW */
 .preview-area{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;position:sticky;top:58px;height:calc(100vh - 58px);overflow:hidden}
 .preview-area::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.035) 1px,transparent 1px);background-size:22px 22px;pointer-events:none}
-.pv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;box-shadow:0 8px 40px rgba(0,0,0,.45);max-width:360px;width:100%}
+.pv-card{background:#ffffff;border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;box-shadow:0 8px 40px rgba(0,0,0,.45);max-width:360px;width:100%}
 #qr-cont canvas{display:block;border-radius:8px}
 .lbl-a{width:100%;text-align:center;word-break:break-word;margin-bottom:12px}
 .lbl-b{width:100%;text-align:center;word-break:break-word;margin-top:10px}
@@ -367,7 +368,7 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
         </div>
         <div class="field">
           <div class="field-lbl"><span>Main text</span><span class="field-hint">Blank = auto-use network name</span></div>
-          <input type="text" id="f-mt" placeholder="Shown above or below the QR code">
+          <input type="text" id="f-mt" placeholder="Shown above or below the QR code" oninput="updLbls()">
         </div>
         <div class="field">
           <div class="field-lbl"><span>Subtitle</span><span class="field-hint">Smaller secondary text</span></div>
@@ -644,7 +645,7 @@ function mkQR() {
     cornersDotOptions: { color: S.cdc, type: 'dot' }
   });
   qr.append(cont);
-  document.getElementById('pv-card').style.background = S.bc;
+  document.querySelector('.pv-card').style.background = S.bc;
 }
 
 function wifiStr() {
@@ -680,6 +681,9 @@ function wifiLbl(text, color, fontSize) {
 function updLbls() {
   S.mt = document.getElementById('f-mt').value;
   S.st = document.getElementById('f-st').value;
+  // Always keep card background in sync with QR background
+  const card = document.querySelector('.pv-card');
+  if (card) card.style.background = S.bc;
   const main = S.mt || S.ssid || '';
   const fw   = S.bold ? '700' : '400';
   const mSt  = `font-size:${S.msz}px;font-weight:${fw};color:${S.mc};font-family:${FF[S.ff]};`;
@@ -902,6 +906,7 @@ function loadFromHistory_byId(id) {
     document.querySelectorAll('[data-pos]').forEach(b => b.classList.toggle('on', b.dataset.pos === S.pos));
     document.querySelectorAll('[data-ff]').forEach(b  => b.classList.toggle('on', b.dataset.ff  === S.ff));
     update();
+    updLbls(); // second pass — ensures labels render after QR canvas settles
     showView('gen');
     _editId = id;
     showToast('Settings loaded', 'ok');
