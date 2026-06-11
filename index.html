@@ -1,9 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='7' height='7' rx='1.5' fill='%23111'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1.5' fill='%23111'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1.5' fill='%23111'/%3E%3Ccircle cx='17.5' cy='17.5' r='1.5' fill='%23111'/%3E%3Cpath d='M14 14h3v3' stroke='%23111' stroke-width='1.8' fill='none'/%3E%3C/svg%3E">
 <title>WiFi QR Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +18,20 @@
   --ok:#22c55e; --ok-d:rgba(34,197,94,0.12);
   --warn:#f59e0b; --danger:#ef4444; --danger-d:rgba(239,68,68,0.12);
 }
+body.light{
+  --void:#f2f2f7;--base:#ffffff;--surface:#f0f0f5;--raised:#e4e4ed;--hover:#d0d0e0;
+  --accent:#009688;--accent-d:rgba(0,150,136,.1);--accent-g:rgba(0,150,136,.2);
+  --t1:#1a1b23;--t2:#55556f;--t3:#88889a;
+  --border:rgba(0,0,0,.09);--border-h:rgba(0,0,0,.18);
+  --ok-d:rgba(34,197,94,.12);--danger-d:rgba(239,68,68,.12);
+}
+body.light .preview-area::before{background-image:radial-gradient(circle,rgba(0,0,0,.05) 1px,transparent 1px)}
+body.light .pv-card{box-shadow:0 4px 24px rgba(0,0,0,.1)}
+body.light select option{background:#fff}
+.icon-btn{background:none;border:1px solid var(--border);border-radius:var(--r-sm);width:30px;height:30px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.icon-btn:hover{background:var(--surface);color:var(--t1);border-color:var(--border-h)}
+.feedback-btn{padding:5px 11px;border-radius:var(--r-sm);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--t2);transition:all .15s;display:flex;align-items:center;gap:5px;text-decoration:none;white-space:nowrap}
+.feedback-btn:hover{background:var(--surface);color:var(--t1);border-color:var(--border-h)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Roboto',sans-serif;background:var(--void);color:var(--t1);min-height:100vh;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -108,7 +122,7 @@ select option{background:var(--surface)}
 .c-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .c-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 8px;display:flex;align-items:center;gap:7px;cursor:pointer;position:relative;transition:border-color .15s}
 .c-btn:hover{border-color:var(--border-h)}
-.c-btn input[type="color"]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;padding:0;-webkit-appearance:none}
+.c-btn input[type="color"]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;padding:0;-webkit-appearance:none;appearance:none}
 .swatch{width:20px;height:20px;border-radius:4px;border:1px solid rgba(255,255,255,.13);flex-shrink:0;transition:transform .12s}
 .c-btn:hover .swatch{transform:scale(1.1)}
 .c-info{flex:1;min-width:0;overflow:hidden}
@@ -189,7 +203,7 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
 .print-row{display:flex;align-items:center;gap:8px;margin-top:10px;position:relative;z-index:1;justify-content:center;flex-wrap:wrap}
 .print-lbl{font-size:12px;color:var(--t2)}
 .pct-wrap{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden}
-.pct-wrap input[type="number"]{width:44px;background:none;border:none;color:var(--t1);font-size:13px;font-family:'Roboto',sans-serif;font-weight:500;text-align:center;outline:none;padding:6px 2px;-moz-appearance:textfield}
+.pct-wrap input[type="number"]{width:44px;background:none;border:none;color:var(--t1);font-size:13px;font-family:'Roboto',sans-serif;font-weight:500;text-align:center;outline:none;padding:6px 2px;-moz-appearance:textfield;appearance:textfield}
 .pct-wrap input[type="number"]::-webkit-inner-spin-button,.pct-wrap input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none}
 .pct-sym{font-size:12px;color:var(--t2);padding-right:8px}
 .pct-btn{background:none;border:none;border-right:1px solid var(--border);color:var(--t2);cursor:pointer;font-size:17px;width:28px;height:34px;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
@@ -272,6 +286,13 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
     <button class="tab-btn on" onclick="showView('gen')">Generator</button>
     <button class="tab-btn" onclick="showView('hist')">History</button>
   </div>
+  <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light / dark theme" style="margin-left:8px">
+    <svg id="theme-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+  </button>
+  <a class="feedback-btn" href="mailto:rootdeyan@outlook.com?subject=WiFi%20QR%20Generator%20Feedback" title="Send feedback by email">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    Feedback
+  </a>
   <div class="hdr-note">Needs internet<br>for QR library</div>
 </header>
 
@@ -358,17 +379,13 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
             <button class="s-btn" data-pos="above" onclick="setPos('above')">
               <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="6" rx="2.5" fill="currentColor" opacity=".85"/><rect x="3" y="10" width="26" height="14" rx="3" fill="currentColor" opacity=".2"/></svg>Above
             </button>
-            <button class="s-btn on" data-pos="below" onclick="setPos('below')">
+            <button class="s-btn" data-pos="below" onclick="setPos('below')">
               <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="14" rx="3" fill="currentColor" opacity=".2"/><rect x="3" y="18" width="26" height="6" rx="2.5" fill="currentColor" opacity=".85"/></svg>Below
             </button>
-            <button class="s-btn" data-pos="both" onclick="setPos('both')">
+            <button class="s-btn on" data-pos="both" onclick="setPos('both')">
               <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="5" rx="2" fill="currentColor" opacity=".85"/><rect x="3" y="8" width="26" height="10" rx="2" fill="currentColor" opacity=".2"/><rect x="3" y="21" width="26" height="3" rx="1.5" fill="currentColor" opacity=".6"/></svg>Both
             </button>
           </div>
-        </div>
-        <div class="field">
-          <div class="field-lbl"><span>Main text</span><span class="field-hint">Blank = auto-use network name</span></div>
-          <input type="text" id="f-mt" placeholder="Shown above or below the QR code" oninput="updLbls()">
         </div>
         <div class="field">
           <div class="field-lbl"><span>Subtitle</span><span class="field-hint">Smaller secondary text</span></div>
@@ -391,9 +408,9 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
               <input type="color" id="cp-mc" value="#000000" oninput="onLClr('m',this.value)">
             </div>
             <div class="c-btn" onclick="document.getElementById('cp-sc').click()">
-              <div class="swatch" id="sw-sc" style="background:#333333"></div>
-              <div class="c-info"><div class="c-name">Subtitle text</div><div class="c-hex" id="hx-sc">#333333</div></div>
-              <input type="color" id="cp-sc" value="#333333" oninput="onLClr('s',this.value)">
+              <div class="swatch" id="sw-sc" style="background:#000000"></div>
+              <div class="c-info"><div class="c-name">Subtitle text</div><div class="c-hex" id="hx-sc">#000000</div></div>
+              <input type="color" id="cp-sc" value="#000000" oninput="onLClr('s',this.value)">
             </div>
           </div>
         </div>
@@ -474,9 +491,9 @@ const S = {
   ssid:'', pw:'', sec:'WPA', hidden:false,
   sz:280, dot:'rounded', corner:'extra-rounded',
   dc:'#000000', bc:'#ffffff', cc:'#000000', cdc:'#000000', ecc:'M',
-  lbls:true, pos:'below',
+  lbls:true, pos:'both',
   mt:'', st:'Scan to connect',
-  msz:16, ssz:12, mc:'#000000', sc:'#333333',
+  msz:16, ssz:12, mc:'#000000', sc:'#000000',
   ff:'sys', bold:true
 };
 let _editId = null; // tracks which history entry is currently loaded
@@ -667,24 +684,23 @@ function update() {
 function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function wifiLbl(text, color, fontSize) {
-  const sz = fontSize || S.msz;
-  const gap = Math.round(sz * 0.3);
+  const fsz = fontSize || S.msz;
+  const sz  = Math.round(fsz * 2.0);
+  const gap = Math.round(fsz * 0.45);
   return `<span style="display:flex;align-items:center;justify-content:center;gap:${gap}px">` +
-    `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-bottom:1px">` +
+    `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))">` +
     `<path d="M5 12.55a11 11 0 0 1 14.08 0"/>` +
     `<path d="M1.42 9a16 16 0 0 1 21.16 0"/>` +
     `<path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>` +
-    `<circle cx="12" cy="20" r="1.5" fill="${color}" stroke="none"/></svg>` +
+    `<circle cx="12" cy="20" r="2" fill="${color}" stroke="none"/></svg>` +
     `<span>${escH(text)}</span></span>`;
 }
 
 function updLbls() {
-  S.mt = document.getElementById('f-mt').value;
   S.st = document.getElementById('f-st').value;
-  // Always keep card background in sync with QR background
   const card = document.querySelector('.pv-card');
   if (card) card.style.background = S.bc;
-  const main = S.mt || S.ssid || '';
+  const main = S.ssid || '';
   const fw   = S.bold ? '700' : '400';
   const mSt  = `font-size:${S.msz}px;font-weight:${fw};color:${S.mc};font-family:${FF[S.ff]};`;
   const sSt  = `font-size:${S.ssz}px;font-weight:400;color:${S.sc};font-family:${FF[S.ff]};`;
@@ -696,12 +712,13 @@ function updLbls() {
   if (!S.lbls) return;
   if (S.pos === 'above') {
     la.innerHTML = wifiLbl(main, S.mc); la.style.cssText = mSt;
+    ls.textContent = S.st; ls.style.cssText = sSt;
   } else if (S.pos === 'below') {
     lb.innerHTML = wifiLbl(main, S.mc); lb.style.cssText = mSt;
     ls.textContent = S.st; ls.style.cssText = sSt;
   } else if (S.pos === 'both') {
     la.innerHTML = wifiLbl(main, S.mc); la.style.cssText = mSt;
-    lb.textContent = S.st; lb.style.cssText = sSt;
+    ls.textContent = S.st; ls.style.cssText = sSt;
   }
 }
 
@@ -785,9 +802,9 @@ async function dlPNG() {
     const main = S.mt || S.ssid || '';
     let tTop = '', tBot = '', tSub = '';
     if (S.lbls) {
-      if (S.pos === 'above') { tTop = main; }
+      if (S.pos === 'above') { tTop = main; tSub = S.st; }
       else if (S.pos === 'below') { tBot = main; tSub = S.st; }
-      else if (S.pos === 'both') { tTop = main; tBot = S.st; }
+      else if (S.pos === 'both') { tTop = main; tSub = S.st; }
     }
     const topH = tTop ? S.msz + 16 : 0;
     let botH = tBot ? S.msz + 10 : 0;
@@ -880,7 +897,6 @@ function loadFromHistory_byId(id) {
     document.getElementById('f-pw').value   = S.pw   || '';
     document.getElementById('f-sec').value  = S.sec  || 'WPA';
     document.getElementById('f-ecc').value  = S.ecc  || 'M';
-    document.getElementById('f-mt').value   = S.mt   || '';
     document.getElementById('f-st').value   = S.st   || 'Scan to connect';
     [['cp-dots','sw-dots','hx-dots', S.dc||'#000000'],
      ['cp-bg',  'sw-bg',  'hx-bg',  S.bc||'#ffffff'],
@@ -1041,9 +1057,9 @@ async function printQR() {
     pa.innerHTML = pb.innerHTML = ps.innerHTML = '';
     pa.removeAttribute('style'); pb.removeAttribute('style'); ps.removeAttribute('style');
     if (S.lbls) {
-      if (S.pos === 'above') { pa.innerHTML = wifiLbl(main, S.mc, S.msz); pa.style.cssText = mSt; }
+      if (S.pos === 'above') { pa.innerHTML = wifiLbl(main, S.mc, S.msz); pa.style.cssText = mSt; ps.textContent = S.st; ps.style.cssText = sSt; }
       else if (S.pos === 'below') { pb.innerHTML = wifiLbl(main, S.mc, S.msz); pb.style.cssText = mSt; ps.textContent = S.st; ps.style.cssText = sSt; }
-      else if (S.pos === 'both') { pa.innerHTML = wifiLbl(main, S.mc, S.msz); pa.style.cssText = mSt; pb.textContent = S.st; pb.style.cssText = sSt; }
+      else if (S.pos === 'both') { pa.innerHTML = wifiLbl(main, S.mc, S.msz); pa.style.cssText = mSt; ps.textContent = S.st; ps.style.cssText = sSt; }
     }
     // Set physical print size in mm
     const img = document.getElementById('pa-qr');
@@ -1055,9 +1071,27 @@ async function printQR() {
   } catch(e) { showToast('Print failed — try again', 'err'); }
 }
 
+// ── THEME ──
+function toggleTheme() {
+  const light = document.body.classList.toggle('light');
+  const ico = document.getElementById('theme-ico');
+  ico.innerHTML = light
+    ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  try { localStorage.setItem('wifiqr-theme', light ? 'light' : 'dark'); } catch(e) {}
+}
+
 // ── INIT ──
 buildPickers();
-update(); // renders QR with empty state (shows preview placeholder)
+update();
+
+// Restore saved theme
+try {
+  if (localStorage.getItem('wifiqr-theme') === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('theme-ico').innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  }
+} catch(e) {}
 
 // First visit guide
 try {
@@ -1066,9 +1100,7 @@ try {
     renderGuideStep(0);
     document.getElementById('guide').classList.remove('hidden');
   }
-} catch(e) {
-  // localStorage unavailable — skip guide
-}
+} catch(e) {}
 </script>
 </body>
 </html>
