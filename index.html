@@ -300,6 +300,12 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
 <div id="view-gen" class="view on">
   <aside class="sidebar">
 
+    <!-- NEW QR BUTTON -->
+    <button onclick="resetQR()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#0c0c16;border:none;border-radius:var(--r);padding:11px 14px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:18px;transition:filter .15s;letter-spacing:.01em" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New QR Code
+    </button>
+
     <!-- NETWORK -->
     <div class="sec">
       <div class="sec-hdr"><span class="sec-lbl">Network</span><span class="sec-line"></span></div>
@@ -375,10 +381,7 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
       <div class="fields-wrap" id="lbl-fields">
         <div class="field">
           <div class="field-lbl">Position</div>
-          <div class="s-grid">
-            <button class="s-btn" data-pos="above" onclick="setPos('above')">
-              <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="6" rx="2.5" fill="currentColor" opacity=".85"/><rect x="3" y="10" width="26" height="14" rx="3" fill="currentColor" opacity=".2"/></svg>Above
-            </button>
+          <div class="s-grid" style="grid-template-columns:1fr 1fr">
             <button class="s-btn" data-pos="below" onclick="setPos('below')">
               <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="14" rx="3" fill="currentColor" opacity=".2"/><rect x="3" y="18" width="26" height="6" rx="2.5" fill="currentColor" opacity=".85"/></svg>Below
             </button>
@@ -708,7 +711,7 @@ function updLbls() {
   const lb = document.getElementById('lb');
   const ls = document.getElementById('ls');
   la.innerHTML = lb.innerHTML = ls.innerHTML = '';
-  la.removeAttribute('style'); lb.removeAttribute('style'); ls.removeAttribute('style');
+  la.style.cssText = 'display:none'; lb.style.cssText = 'display:none'; ls.style.cssText = 'display:none';
   if (!S.lbls) return;
   if (S.pos === 'above') {
     la.innerHTML = wifiLbl(main, S.mc); la.style.cssText = mSt;
@@ -1055,7 +1058,7 @@ async function printQR() {
     const pb = document.getElementById('pa-below');
     const ps = document.getElementById('pa-sub');
     pa.innerHTML = pb.innerHTML = ps.innerHTML = '';
-    pa.removeAttribute('style'); pb.removeAttribute('style'); ps.removeAttribute('style');
+    pa.style.cssText = 'display:none'; pb.style.cssText = 'display:none'; ps.style.cssText = 'display:none';
     if (S.lbls) {
       if (S.pos === 'above') { pa.innerHTML = wifiLbl(main, S.mc, S.msz); pa.style.cssText = mSt; ps.textContent = S.st; ps.style.cssText = sSt; }
       else if (S.pos === 'below') { pb.innerHTML = wifiLbl(main, S.mc, S.msz); pb.style.cssText = mSt; ps.textContent = S.st; ps.style.cssText = sSt; }
@@ -1069,6 +1072,20 @@ async function printQR() {
     img.onerror = () => { showToast('Print image failed', 'err'); URL.revokeObjectURL(url); };
     img.src = url;
   } catch(e) { showToast('Print failed — try again', 'err'); }
+}
+
+// ── RESET ──
+function resetQR() {
+  document.getElementById('f-ssid').value = '';
+  document.getElementById('f-pw').value   = '';
+  document.getElementById('f-sec').value  = 'WPA';
+  document.getElementById('f-ecc').value  = 'M';
+  document.getElementById('f-st').value   = 'Scan to connect';
+  S.ssid=''; S.pw=''; S.sec='WPA'; S.ecc='M'; S.st='Scan to connect';
+  S.hidden=false; document.getElementById('sw-hidden').classList.remove('on');
+  _editId = null;
+  update();
+  showToast('Ready — enter a network name to begin', 'ok');
 }
 
 // ── THEME ──
