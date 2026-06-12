@@ -217,6 +217,8 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
   html,body{background:#fff!important;margin:0!important;padding:0!important}
   body>*{display:none!important}
   #print-area{display:flex!important;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:15mm;box-sizing:border-box;background:#fff!important}
+  #print-frame{display:flex;flex-direction:column;align-items:center;padding:8mm;border:0.6pt dashed #aaa;border-radius:3mm;position:relative;background:#fff}
+  #print-frame::after{content:'✂  cut here';position:absolute;bottom:-6pt;left:50%;transform:translateX(-50%);font-size:7pt;color:#bbb;background:#fff;padding:0 3mm;letter-spacing:.08em;font-family:sans-serif;white-space:nowrap}
   #pa-qr{display:block;max-width:100%;border-radius:4px}
   #pa-above,#pa-below,#pa-sub{width:100%;text-align:center;word-break:break-word}
   #pa-above{margin-bottom:7mm}
@@ -481,10 +483,12 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
 
 <!-- PRINT AREA (hidden on screen, shown when printing) -->
 <div id="print-area" aria-hidden="true">
-  <div id="pa-above"></div>
-  <img id="pa-qr" alt="WiFi QR Code" src="">
-  <div id="pa-below"></div>
-  <div id="pa-sub"></div>
+  <div id="print-frame">
+    <div id="pa-above"></div>
+    <img id="pa-qr" alt="WiFi QR Code" src="">
+    <div id="pa-below"></div>
+    <div id="pa-sub"></div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
