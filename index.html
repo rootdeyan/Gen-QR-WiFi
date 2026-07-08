@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -217,12 +216,20 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   html,body{background:#fff!important;margin:0!important;padding:0!important}
   body>*{display:none!important}
-  #print-area{display:flex!important;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:15mm;box-sizing:border-box;background:#fff!important}
-  #pa-qr{display:block;max-width:100%;border-radius:4px}
-  #pa-above,#pa-below,#pa-sub{width:100%;text-align:center;word-break:break-word}
-  #pa-above{margin-bottom:7mm}
-  #pa-below{margin-top:7mm}
-  #pa-sub{margin-top:3mm}
+  #print-area{display:flex!important;flex-wrap:wrap;align-content:flex-start;justify-content:flex-start;gap:6mm;margin:0;padding:10mm;box-sizing:border-box;background:#fff!important}
+  .pf{display:flex;flex-direction:column;align-items:center;padding:8mm;border:0.6pt dashed #aaa;position:relative;background:#fff;break-inside:avoid}
+  .pf::after{content:'✂  cut here';position:absolute;bottom:-6pt;left:50%;transform:translateX(-50%);font-size:7pt;color:#bbb;background:#fff;padding:0 3mm;letter-spacing:.08em;font-family:sans-serif;white-space:nowrap}
+  .pf-qr{display:block}
+  .pf-above,.pf-below,.pf-sub{width:100%;text-align:center;word-break:break-word}
+  .pf-above{margin-bottom:7mm}
+  .pf-below{margin-top:7mm}
+  .pf-sub{margin-top:3mm}
+  .pf-fold,.pf-fold2{width:100%;border-top:0.6pt dashed #aaa;position:relative;height:6pt}
+  .pf-fold{margin-top:6mm}
+  .pf-fold::after{content:'① fold backward';font-size:7pt;color:#bbb;background:#fff;padding:0 3mm;letter-spacing:.08em;font-family:sans-serif;white-space:nowrap;position:absolute;top:-5pt;left:50%;transform:translateX(-50%)}
+  .pf-fold2::after{content:'② fold under';font-size:7pt;color:#bbb;background:#fff;padding:0 3mm;letter-spacing:.08em;font-family:sans-serif;white-space:nowrap;position:absolute;top:-5pt;left:50%;transform:translateX(-50%)}
+  .pf-stand{height:28mm;width:100%}
+  .pf-tuck{height:14mm;width:100%}
 }
 /* RESPONSIVE */
 @media(max-width:860px){#view-gen{grid-template-columns:305px 1fr}}
@@ -301,6 +308,12 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
 <div id="view-gen" class="view on">
   <aside class="sidebar">
 
+    <!-- NEW QR BUTTON -->
+    <button onclick="resetQR()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#0c0c16;border:none;border-radius:var(--r);padding:11px 14px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:18px;transition:filter .15s;letter-spacing:.01em" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New QR Code
+    </button>
+
     <!-- NETWORK -->
     <div class="sec">
       <div class="sec-hdr"><span class="sec-lbl">Network</span><span class="sec-line"></span></div>
@@ -376,10 +389,7 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
       <div class="fields-wrap" id="lbl-fields">
         <div class="field">
           <div class="field-lbl">Position</div>
-          <div class="s-grid">
-            <button class="s-btn" data-pos="above" onclick="setPos('above')">
-              <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="6" rx="2.5" fill="currentColor" opacity=".85"/><rect x="3" y="10" width="26" height="14" rx="3" fill="currentColor" opacity=".2"/></svg>Above
-            </button>
+          <div class="s-grid" style="grid-template-columns:1fr 1fr">
             <button class="s-btn" data-pos="below" onclick="setPos('below')">
               <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="14" rx="3" fill="currentColor" opacity=".2"/><rect x="3" y="18" width="26" height="6" rx="2.5" fill="currentColor" opacity=".85"/></svg>Below
             </button>
@@ -457,6 +467,18 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
         <span class="pct-sym">%</span>
         <button class="pct-btn" onclick="chPct(5)" title="Increase size">+</button>
       </div>
+      <span class="print-lbl" style="margin-left:6px">Per page</span>
+      <div class="pct-wrap">
+        <select id="print-qty" style="background:none;border:none;color:var(--t1);font-size:13px;font-family:inherit;cursor:pointer;outline:none;padding:6px 10px;-webkit-appearance:none;appearance:none;text-align:center;width:44px">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="4" selected>4</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2);cursor:pointer;user-select:none">
+        <input type="checkbox" id="print-stand"> Stand tab
+      </label>
       <button class="btn btn-g" onclick="printQR()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
         Print
@@ -478,12 +500,7 @@ input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--ac
 </div>
 
 <!-- PRINT AREA (hidden on screen, shown when printing) -->
-<div id="print-area" aria-hidden="true">
-  <div id="pa-above"></div>
-  <img id="pa-qr" alt="WiFi QR Code" src="">
-  <div id="pa-below"></div>
-  <div id="pa-sub"></div>
-</div>
+<div id="print-area" aria-hidden="true"></div>
 
 <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
 <script>
@@ -689,7 +706,7 @@ function wifiLbl(text, color, fontSize) {
   const sz  = Math.round(fsz * 2.0);
   const gap = Math.round(fsz * 0.45);
   return `<span style="display:flex;align-items:center;justify-content:center;gap:${gap}px">` +
-    `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))">` +
+    `<svg width="${sz}" height="${sz}" viewBox="0 3 24 21" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))">` +
     `<path d="M5 12.55a11 11 0 0 1 14.08 0"/>` +
     `<path d="M1.42 9a16 16 0 0 1 21.16 0"/>` +
     `<path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>` +
@@ -709,7 +726,7 @@ function updLbls() {
   const lb = document.getElementById('lb');
   const ls = document.getElementById('ls');
   la.innerHTML = lb.innerHTML = ls.innerHTML = '';
-  la.removeAttribute('style'); lb.removeAttribute('style'); ls.removeAttribute('style');
+  la.style.cssText = 'display:none'; lb.style.cssText = 'display:none'; ls.style.cssText = 'display:none';
   if (!S.lbls) return;
   if (S.pos === 'above') {
     la.innerHTML = wifiLbl(main, S.mc); la.style.cssText = mSt;
@@ -1029,16 +1046,16 @@ function chPct(delta) {
 
 async function printQR() {
   if (!S.ssid.trim()) { showToast('Enter a network name first', 'warn'); return; }
-  const pct    = Math.min(200, Math.max(40, parseInt(document.getElementById('print-pct').value) || 100));
-  const sizeMM = Math.round(75 * pct / 100); // 75mm base = good "normal" size
+  const pct   = Math.min(200, Math.max(40, parseInt(document.getElementById('print-pct').value) || 100));
+  const qty   = parseInt(document.getElementById('print-qty').value) || 1;
+  const stand = document.getElementById('print-stand').checked;
+  const sizeMM = Math.round(75 * pct / 100);
   showToast('Preparing print…');
   try {
-    // Generate high-resolution QR (800px) for crisp print output
     const cSq = CORNERS.find(c => c.id === S.corner)?.sq || 'square';
     const hiQR = new QRCodeStyling({
       width:800, height:800, type:'canvas',
-      data: wifiStr(),
-      margin: 0,
+      data: wifiStr(), margin: 0,
       qrOptions:{ errorCorrectionLevel: S.ecc },
       dotsOptions:{ color: S.dc, type: S.dot },
       backgroundOptions:{ color: S.bc },
@@ -1051,25 +1068,85 @@ async function printQR() {
     const fw   = S.bold ? '700' : '400';
     const mSt  = `font-size:${S.msz}px;font-weight:${fw};color:${S.mc};font-family:${FF[S.ff]};`;
     const sSt  = `font-size:${S.ssz}px;color:${S.sc};font-family:${FF[S.ff]};`;
-    // Populate print labels
-    const pa = document.getElementById('pa-above');
-    const pb = document.getElementById('pa-below');
-    const ps = document.getElementById('pa-sub');
-    pa.innerHTML = pb.innerHTML = ps.innerHTML = '';
-    pa.removeAttribute('style'); pb.removeAttribute('style'); ps.removeAttribute('style');
-    if (S.lbls) {
-      if (S.pos === 'above') { pa.innerHTML = wifiLbl(main, S.mc, S.msz); pa.style.cssText = mSt; ps.textContent = S.st; ps.style.cssText = sSt; }
-      else if (S.pos === 'below') { pb.innerHTML = wifiLbl(main, S.mc, S.msz); pb.style.cssText = mSt; ps.textContent = S.st; ps.style.cssText = sSt; }
-      else if (S.pos === 'both') { pa.innerHTML = wifiLbl(main, S.mc, S.msz); pa.style.cssText = mSt; ps.textContent = S.st; ps.style.cssText = sSt; }
+    const area = document.getElementById('print-area');
+    area.innerHTML = '';
+    let loaded = 0;
+    const showAbove = S.lbls && (S.pos === 'above' || S.pos === 'both');
+    const showBelow = S.lbls && S.pos === 'below';
+    for (let i = 0; i < qty; i++) {
+      const frame = document.createElement('div');
+      frame.className = 'pf';
+      if (showAbove) {
+        const d = document.createElement('div');
+        d.className = 'pf-above';
+        d.innerHTML = wifiLbl(main, S.mc, S.msz);
+        d.style.cssText = mSt;
+        frame.appendChild(d);
+        if (S.st) {
+          const s = document.createElement('div');
+          s.className = 'pf-sub';
+          s.textContent = S.st;
+          s.style.cssText = sSt;
+          frame.appendChild(s);
+        }
+      }
+      const img = document.createElement('img');
+      img.className = 'pf-qr';
+      img.alt = 'WiFi QR Code';
+      img.style.width = sizeMM + 'mm';
+      img.style.height = sizeMM + 'mm';
+      frame.appendChild(img);
+      if (showBelow) {
+        const d = document.createElement('div');
+        d.className = 'pf-below';
+        d.innerHTML = wifiLbl(main, S.mc, S.msz);
+        d.style.cssText = mSt;
+        frame.appendChild(d);
+        if (S.st) {
+          const s = document.createElement('div');
+          s.className = 'pf-sub';
+          s.textContent = S.st;
+          s.style.cssText = sSt;
+          frame.appendChild(s);
+        }
+      }
+      if (stand) {
+        const fold = document.createElement('div');
+        fold.className = 'pf-fold';
+        frame.appendChild(fold);
+        const standTab = document.createElement('div');
+        standTab.className = 'pf-stand';
+        frame.appendChild(standTab);
+        const fold2 = document.createElement('div');
+        fold2.className = 'pf-fold2';
+        frame.appendChild(fold2);
+        const tuck = document.createElement('div');
+        tuck.className = 'pf-tuck';
+        frame.appendChild(tuck);
+      }
+      area.appendChild(frame);
+      img.onload = () => {
+        loaded++;
+        if (loaded === qty) { window.print(); setTimeout(() => URL.revokeObjectURL(url), 1500); }
+      };
+      img.onerror = () => { showToast('Print image failed', 'err'); URL.revokeObjectURL(url); };
+      img.src = url;
     }
-    // Set physical print size in mm
-    const img = document.getElementById('pa-qr');
-    img.style.width  = sizeMM + 'mm';
-    img.style.height = sizeMM + 'mm';
-    img.onload = () => { window.print(); setTimeout(() => URL.revokeObjectURL(url), 1500); };
-    img.onerror = () => { showToast('Print image failed', 'err'); URL.revokeObjectURL(url); };
-    img.src = url;
   } catch(e) { showToast('Print failed — try again', 'err'); }
+}
+
+// ── RESET ──
+function resetQR() {
+  document.getElementById('f-ssid').value = '';
+  document.getElementById('f-pw').value   = '';
+  document.getElementById('f-sec').value  = 'WPA';
+  document.getElementById('f-ecc').value  = 'M';
+  document.getElementById('f-st').value   = 'Scan to connect';
+  S.ssid=''; S.pw=''; S.sec='WPA'; S.ecc='M'; S.st='Scan to connect';
+  S.hidden=false; document.getElementById('sw-hidden').classList.remove('on');
+  _editId = null;
+  update();
+  showToast('Ready — enter a network name to begin', 'ok');
 }
 
 // ── THEME ──
