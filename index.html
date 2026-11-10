@@ -2,519 +2,584 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='7' height='7' rx='1.5' fill='%23111'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1.5' fill='%23111'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1.5' fill='%23111'/%3E%3Ccircle cx='17.5' cy='17.5' r='1.5' fill='%23111'/%3E%3Cpath d='M14 14h3v3' stroke='%23111' stroke-width='1.8' fill='none'/%3E%3C/svg%3E">
+<!-- maximum-scale=1 stops iOS/Android auto-zooming on input focus and pinch-zoom (requested) -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#07080f">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233ef0d0'/%3E%3Cstop offset='1' stop-color='%237c5cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='24' height='24' rx='6' fill='url(%23g)'/%3E%3Cpath d='M5 10.5a10 10 0 0 1 14 0M7.8 13.3a6 6 0 0 1 8.4 0' stroke='%2307080f' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='17' r='1.6' fill='%2307080f'/%3E%3C/svg%3E">
 <title>WiFi QR Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 <style>
-:root {
-  --void:#1a1b23; --base:#21222d; --surface:#2a2b38; --raised:#333442; --hover:#3d3e4e;
-  --accent:#00c8b8; --accent-d:rgba(0,200,184,0.13); --accent-g:rgba(0,200,184,0.25);
-  --t1:#e4e4f0; --t2:#8888a8; --t3:#555570;
-  --border:rgba(255,255,255,0.08); --border-h:rgba(255,255,255,0.16);
-  --r:8px; --r-sm:5px; --r-lg:14px;
-  --ok:#22c55e; --ok-d:rgba(34,197,94,0.12);
-  --warn:#f59e0b; --danger:#ef4444; --danger-d:rgba(239,68,68,0.12);
+/* ═══ TOKENS ═══ */
+:root{
+  --bg:#07080f; --panel:rgba(20,22,40,.55); --panel-solid:#11132a;
+  --field:rgba(255,255,255,.045); --field-h:rgba(255,255,255,.08);
+  --line:rgba(255,255,255,.08); --line-h:rgba(255,255,255,.18);
+  --t1:#eef0ff; --t2:#9aa0c3; --t3:#626896;
+  --a1:#3ef0d0; --a2:#7c5cff; --a3:#ff5ca8; --acc:#3ef0d0;
+  --grad:linear-gradient(120deg,var(--a1),var(--a2) 55%,var(--a3));
+  --a-soft:rgba(62,240,208,.10); --a-ring:rgba(62,240,208,.38);
+  --ok:#34d399; --warn:#fbbf24; --danger:#fb7185;
+  --r:16px; --r-sm:11px; --r-lg:24px;
+  --shadow:0 24px 70px -24px rgba(0,0,0,.8);
+  --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.34,1.56,.64,1);
+  --hdr:66px;
+  color-scheme:dark;
 }
 body.light{
-  --void:#f2f2f7;--base:#ffffff;--surface:#f0f0f5;--raised:#e4e4ed;--hover:#d0d0e0;
-  --accent:#009688;--accent-d:rgba(0,150,136,.1);--accent-g:rgba(0,150,136,.2);
-  --t1:#1a1b23;--t2:#55556f;--t3:#88889a;
-  --border:rgba(0,0,0,.09);--border-h:rgba(0,0,0,.18);
-  --ok-d:rgba(34,197,94,.12);--danger-d:rgba(239,68,68,.12);
+  --bg:#eef0f9; --panel:rgba(255,255,255,.72); --panel-solid:#ffffff;
+  --field:rgba(20,22,60,.045); --field-h:rgba(20,22,60,.08);
+  --line:rgba(20,22,60,.09); --line-h:rgba(20,22,60,.2);
+  --t1:#151735; --t2:#555a82; --t3:#9196ba;
+  --a1:#10b897; --a2:#6246ea; --a3:#e0407f; --acc:#6246ea;
+  --a-soft:rgba(98,70,234,.08); --a-ring:rgba(98,70,234,.32);
+  --shadow:0 24px 60px -28px rgba(30,30,90,.35);
+  color-scheme:light;
 }
-body.light .preview-area::before{background-image:radial-gradient(circle,rgba(0,0,0,.05) 1px,transparent 1px)}
-body.light .pv-card{box-shadow:0 4px 24px rgba(0,0,0,.1)}
-body.light select option{background:#fff}
-.icon-btn{background:none;border:1px solid var(--border);border-radius:var(--r-sm);width:30px;height:30px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.icon-btn:hover{background:var(--surface);color:var(--t1);border-color:var(--border-h)}
-.feedback-btn{padding:5px 11px;border-radius:var(--r-sm);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--t2);transition:all .15s;display:flex;align-items:center;gap:5px;text-decoration:none;white-space:nowrap}
-.feedback-btn:hover{background:var(--surface);color:var(--t1);border-color:var(--border-h)}
+
+/* ═══ BASE ═══ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Roboto',sans-serif;background:var(--void);color:var(--t1);min-height:100vh;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;scroll-behavior:smooth}
+body{font-family:'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;min-height:100dvh;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow-x:hidden;transition:background .5s var(--ease),color .3s}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+::selection{background:var(--a2);color:#fff}
 
-/* HEADER */
-.hdr{background:var(--base);border-bottom:1px solid var(--border);padding:11px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200}
-.hdr-logo{width:34px;height:34px;background:var(--accent-d);border:1px solid var(--accent-g);border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)}
-.hdr-logo svg{width:17px;height:17px}
-.hdr-title{font-size:15px;font-weight:600;letter-spacing:-.01em}
-.hdr-sub{font-size:11px;color:var(--t2);margin-top:1px}
-.hdr-tabs{display:flex;gap:4px;margin-left:auto}
-.tab-btn{padding:6px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--t2);transition:all .15s}
-.tab-btn:hover{background:var(--surface);color:var(--t1)}
-.tab-btn.on{background:var(--accent-d);border-color:var(--accent);color:var(--accent)}
-.hdr-note{font-size:10px;color:var(--t3);text-align:right;line-height:1.5;margin-left:10px}
+/* ═══ ANIMATED BACKDROP ═══ */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bg i{position:absolute;border-radius:50%;will-change:transform;animation:drift 24s var(--ease) infinite alternate}
+.bg i:nth-child(1){width:70vmax;height:70vmax;top:-30vmax;left:-25vmax;background:radial-gradient(circle,rgba(124,92,255,.32),transparent 62%)}
+.bg i:nth-child(2){width:65vmax;height:65vmax;bottom:-32vmax;right:-22vmax;background:radial-gradient(circle,rgba(62,240,208,.2),transparent 62%);animation-duration:30s;animation-direction:alternate-reverse}
+.bg i:nth-child(3){width:45vmax;height:45vmax;top:25%;left:45%;background:radial-gradient(circle,rgba(255,92,168,.14),transparent 62%);animation-duration:36s}
+.bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.06) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%);mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%)}
+body.light .bg i:nth-child(1){background:radial-gradient(circle,rgba(98,70,234,.18),transparent 62%)}
+body.light .bg i:nth-child(2){background:radial-gradient(circle,rgba(16,184,151,.16),transparent 62%)}
+body.light .bg::after{background-image:radial-gradient(circle,rgba(20,22,60,.07) 1px,transparent 1px)}
+@keyframes drift{to{transform:translate(9vmax,7vmax) scale(1.12)}}
 
-/* LAYOUT */
+/* ═══ HEADER ═══ */
+.hdr{position:sticky;top:0;z-index:200;height:var(--hdr);display:flex;align-items:center;gap:12px;padding:0 max(20px,env(safe-area-inset-right)) 0 max(20px,env(safe-area-inset-left));background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--line)}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--grad);display:grid;place-items:center;color:#07080f;font-size:17px;position:relative;flex-shrink:0;box-shadow:0 6px 22px -6px var(--a2)}
+.logo::after{content:'';position:absolute;inset:-4px;border-radius:15px;border:1.5px solid var(--a1);opacity:0;animation:ping 2.8s var(--ease) infinite}
+@keyframes ping{0%{transform:scale(.85);opacity:.7}80%,100%{transform:scale(1.25);opacity:0}}
+.brand-title{font-size:16px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.brand-title b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-sub{font-size:11px;color:var(--t2);margin-top:2px}
+.tabs{position:relative;display:flex;margin-left:auto;background:var(--field);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tab-ind{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:var(--grad);transition:transform .45s var(--spring);box-shadow:0 4px 16px -4px var(--a2)}
+.tabs[data-v="hist"] .tab-ind{transform:translateX(100%)}
+.tab-btn{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:7px;min-width:112px;padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--t2);transition:color .3s}
+.tab-btn.on{color:#07080f}
+.tab-count{font-size:10px;min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:var(--a-soft);color:var(--acc);display:inline-grid;place-items:center;transition:background .3s,color .3s}
+.tab-btn.on .tab-count{background:rgba(7,8,15,.18);color:#07080f}
+.hdr-tools{display:flex;gap:6px;align-items:center}
+.icon-btn{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--field);color:var(--t2);display:grid;place-items:center;font-size:14px;transition:all .25s var(--ease);flex-shrink:0;text-decoration:none}
+.icon-btn:hover{color:var(--t1);border-color:var(--line-h);background:var(--field-h);transform:translateY(-1px)}
+.icon-btn i{transition:transform .5s var(--spring)}
+#theme-btn:hover i{transform:rotate(40deg)}
+
+/* ═══ VIEWS ═══ */
 .view{display:none}
-.view.on{display:flex}
-#view-gen{grid-template-columns:352px 1fr;min-height:calc(100vh - 58px)}
-#view-gen.on{display:grid}
+.view.on{display:grid;animation:viewIn .55s var(--ease)}
+@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-/* SIDEBAR */
-.sidebar{background:var(--base);border-right:1px solid var(--border);padding:16px 14px 30px;overflow-y:auto;max-height:calc(100vh - 58px)}
-.sidebar::-webkit-scrollbar{width:3px}
-.sidebar::-webkit-scrollbar-thumb{background:var(--hover);border-radius:2px}
+/* ═══ GENERATOR LAYOUT ═══ */
+#view-gen{grid-template-columns:390px 1fr;gap:22px;padding:22px max(22px,env(safe-area-inset-right)) 40px max(22px,env(safe-area-inset-left));max-width:1440px;margin:0 auto;align-items:start}
+.sidebar{display:flex;flex-direction:column;gap:14px;min-width:0}
 
-/* PREVIEW */
-.preview-area{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;position:sticky;top:58px;height:calc(100vh - 58px);overflow:hidden}
-.preview-area::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.035) 1px,transparent 1px);background-size:22px 22px;pointer-events:none}
-.pv-card{background:#ffffff;border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;box-shadow:0 8px 40px rgba(0,0,0,.45);max-width:360px;width:100%}
-#qr-cont canvas{display:block;border-radius:8px}
-.lbl-a{width:100%;text-align:center;word-break:break-word;margin-bottom:12px}
-.lbl-b{width:100%;text-align:center;word-break:break-word;margin-top:10px}
-.lbl-s{width:100%;text-align:center;word-break:break-word;margin-top:4px}
+/* ═══ PANELS ═══ */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--shadow);animation:rise .7s var(--ease) both;animation-delay:calc(var(--i,0) * 80ms);transition:border-color .3s}
+.panel:hover{border-color:var(--line-h)}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+.p-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.p-ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--a-soft);color:var(--acc);font-size:13px;border:1px solid var(--a-ring)}
+.p-title{font-size:14px;font-weight:700;letter-spacing:-.01em}
+.p-step{margin-left:auto;font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.12em}
 
-/* ACTIONS */
-.actions{display:flex;gap:7px;margin-top:16px;position:relative;z-index:1;flex-wrap:wrap;justify-content:center}
-.btn{padding:8px 15px;border-radius:var(--r-sm);font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;border:1px solid transparent;white-space:nowrap}
-.btn-p{background:var(--accent);color:#0c0c16;font-weight:700;border-color:var(--accent)}
-.btn-p:hover{filter:brightness(1.1)}
-.btn-p:active{transform:scale(.97)}
-.btn-g{background:var(--surface);color:var(--t1);border-color:var(--border)}
-.btn-g:hover{background:var(--raised);border-color:var(--border-h)}
-.btn-ok{background:var(--ok-d);color:var(--ok);border-color:rgba(34,197,94,.3)}
-.btn-ok:hover{background:rgba(34,197,94,.2)}
-.btn-danger{background:var(--danger-d);color:var(--danger);border-color:rgba(239,68,68,.3)}
-.btn-danger:hover{background:rgba(239,68,68,.2)}
+.new-btn{position:relative;overflow:hidden;width:100%;display:flex;align-items:center;justify-content:center;gap:9px;padding:14px;border-radius:var(--r);background:var(--grad);background-size:200% 100%;color:#07080f;font-weight:700;font-size:15px;letter-spacing:-.01em;box-shadow:0 10px 30px -10px var(--a2);transition:background-position .6s var(--ease),transform .2s var(--ease),box-shadow .3s;animation:rise .6s var(--ease) both}
+.new-btn:hover{background-position:100% 0;box-shadow:0 14px 36px -10px var(--a2)}
+.new-btn:active{transform:scale(.98)}
+.new-btn i{transition:transform .5s var(--spring)}
+.new-btn:hover i{transform:rotate(90deg)}
 
-/* SECTIONS */
-.sec{margin-bottom:20px}
-.sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.sec-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
-.sec-line{flex:1;height:1px;background:var(--border)}
+/* ═══ FIELDS ═══ */
+.field{margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.f-lbl{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;font-weight:500;color:var(--t2);margin-bottom:6px}
+.f-hint{font-size:10.5px;color:var(--t3);font-weight:400}
+.inp{position:relative}
+.inp>i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;pointer-events:none;transition:color .25s}
+.inp:focus-within>i{color:var(--acc)}
+input[type="text"],input[type="password"],select{width:100%;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--t1);padding:11px 13px 11px 38px;font-size:14px;outline:none;transition:border-color .25s,background .25s,box-shadow .25s;-webkit-appearance:none;appearance:none}
+input::placeholder{color:var(--t3)}
+input[type="text"]:hover,input[type="password"]:hover,select:hover{border-color:var(--line-h)}
+input[type="text"]:focus,input[type="password"]:focus,select:focus{border-color:var(--acc);background:var(--field-h);box-shadow:0 0 0 4px var(--a-soft)}
+select{padding-right:36px;cursor:pointer;text-overflow:ellipsis}
+.sel::after{content:'\f078';font:900 10px 'Font Awesome 6 Free';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none}
+select option{background:var(--panel-solid);color:var(--t1)}
+.pw-eye{position:absolute;right:4px;top:4px;bottom:4px;width:38px;border-radius:8px;color:var(--t3);display:grid;place-items:center;transition:color .2s,background .2s}
+.pw-eye:hover{color:var(--t1);background:var(--field-h)}
+.inp.pw input{padding-right:46px}
 
-/* FIELDS */
-.field{margin-bottom:9px}
-.field>label,.field-lbl{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--t2);margin-bottom:5px}
-.field-hint{font-size:10px;color:var(--t3)}
-input[type="text"],input[type="password"],select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--t1);padding:8px 11px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s,background .15s;-webkit-appearance:none;appearance:none}
-input[type="text"]:focus,input[type="password"]:focus,select:focus{border-color:var(--accent);background:var(--raised)}
-select option{background:var(--surface)}
+/* ═══ SWITCH ROWS ═══ */
+.t-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;padding:10px 12px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);transition:border-color .25s,background .25s;user-select:none}
+.t-row:hover{border-color:var(--line-h);background:var(--field-h)}
+.t-row+.t-row{margin-top:8px}
+.t-name{font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.t-name i{color:var(--t3);width:14px;text-align:center}
+.t-hint{font-size:11px;color:var(--t3);margin-top:1px}
+.sw{width:40px;height:23px;border-radius:12px;background:var(--line-h);position:relative;flex-shrink:0;transition:background .35s var(--ease)}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .45s var(--spring)}
+.t-row[aria-checked="true"] .sw{background:var(--grad)}
+.t-row[aria-checked="true"] .sw::after{transform:translateX(17px)}
 
-/* PW */
-.pw-wrap{position:relative}
-.pw-wrap input{padding-right:40px}
-.pw-eye{position:absolute;right:1px;top:1px;bottom:1px;width:36px;background:none;border:none;color:var(--t3);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
-.pw-eye:hover{color:var(--t2)}
+/* ═══ PICKERS ═══ */
+.s-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.s-grid.two{grid-template-columns:1fr 1fr}
+.s-btn{position:relative;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--t2);padding:10px 4px 8px;font-size:11px;font-weight:600;letter-spacing:.02em;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .3s var(--ease)}
+.s-btn svg{transition:transform .45s var(--spring)}
+.s-btn:hover{border-color:var(--line-h);color:var(--t1);transform:translateY(-2px)}
+.s-btn:hover svg{transform:scale(1.08)}
+.s-btn.on{border-color:var(--acc);color:var(--acc);background:var(--a-soft);box-shadow:0 0 0 3px var(--a-soft),0 8px 20px -10px var(--acc)}
+.s-btn.on::after{content:'\f00c';font:900 8px 'Font Awesome 6 Free';position:absolute;top:5px;right:5px;width:15px;height:15px;border-radius:50%;background:var(--acc);color:var(--bg);display:grid;place-items:center;animation:popIn .4s var(--spring)}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
 
-/* TOGGLE */
-.t-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:border-color .15s;user-select:none}
-.t-row:hover{border-color:var(--border-h)}
-.t-row+.t-row{margin-top:6px}
-.t-info .t-name{font-size:13px}
-.t-info .t-hint{font-size:11px;color:var(--t3);margin-top:1px}
-.sw{width:34px;height:19px;background:var(--hover);border-radius:10px;position:relative;transition:background .2s;flex-shrink:0;margin-left:10px}
-.sw.on{background:var(--accent)}
-.sw::after{content:'';position:absolute;width:13px;height:13px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s}
-.sw.on::after{transform:translateX(15px)}
+.c-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.c-btn{position:relative;display:flex;align-items:center;gap:10px;padding:9px 10px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);cursor:pointer;transition:border-color .25s,background .25s;min-width:0}
+.c-btn:hover{border-color:var(--line-h);background:var(--field-h)}
+.c-btn input[type="color"]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.swatch{width:26px;height:26px;border-radius:8px;flex-shrink:0;border:1px solid var(--line-h);box-shadow:inset 0 0 0 2px rgba(255,255,255,.15);transition:transform .4s var(--spring)}
+.c-btn:hover .swatch{transform:scale(1.12) rotate(-6deg)}
+.c-name{font-size:12px;color:var(--t2)}
+.c-hex{font-size:11px;font-family:'Roboto Mono',monospace;color:var(--t3);text-transform:uppercase}
 
-/* STYLE GRIDS */
-.s-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
-.s-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--t2);padding:7px 4px 5px;cursor:pointer;font-size:10px;font-family:inherit;font-weight:500;letter-spacing:.03em;text-align:center;transition:all .12s;display:flex;flex-direction:column;align-items:center;gap:4px}
-.s-btn:hover{border-color:var(--border-h);color:var(--t1);background:var(--raised)}
-.s-btn.on{border-color:var(--accent);color:var(--accent);background:var(--accent-d)}
+.f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.f-btn{background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--t2);padding:9px 4px;font-size:14px;transition:all .3s var(--ease)}
+.f-btn:hover{border-color:var(--line-h);color:var(--t1);transform:translateY(-2px)}
+.f-btn.on{border-color:var(--acc);color:var(--acc);background:var(--a-soft);box-shadow:0 0 0 3px var(--a-soft)}
 
-/* COLORS */
-.c-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.c-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 8px;display:flex;align-items:center;gap:7px;cursor:pointer;position:relative;transition:border-color .15s}
-.c-btn:hover{border-color:var(--border-h)}
-.c-btn input[type="color"]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;padding:0;-webkit-appearance:none;appearance:none}
-.swatch{width:20px;height:20px;border-radius:4px;border:1px solid rgba(255,255,255,.13);flex-shrink:0;transition:transform .12s}
-.c-btn:hover .swatch{transform:scale(1.1)}
-.c-info{flex:1;min-width:0;overflow:hidden}
-.c-name{font-size:11px;color:var(--t2)}
-.c-hex{font-size:10px;font-family:'SF Mono','Fira Mono',monospace;color:var(--t3)}
+.fields-wrap{display:grid;grid-template-rows:1fr;transition:grid-template-rows .45s var(--ease),opacity .35s;margin-top:10px}
+.fields-wrap>div{overflow:hidden;min-height:0}
+.fields-wrap.off{grid-template-rows:0fr;opacity:0;pointer-events:none}
 
-/* SLIDERS */
-input[type="range"]{width:100%;-webkit-appearance:none;appearance:none;height:3px;background:var(--hover);border-radius:2px;outline:none;cursor:pointer}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;background:var(--accent);border-radius:50%;cursor:pointer;border:2px solid var(--base);box-shadow:0 0 0 1px var(--accent)}
-input[type="range"]::-moz-range-thumb{width:13px;height:13px;background:var(--accent);border-radius:50%;cursor:pointer;border:2px solid var(--base)}
+/* ═══ STAGE / PREVIEW ═══ */
+.stage{position:sticky;top:calc(var(--hdr) + 22px);min-height:calc(100dvh - var(--hdr) - 62px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:30px 20px;border-radius:30px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.03),transparent 60%);overflow:hidden;animation:rise .8s var(--ease) both;animation-delay:.15s;isolation:isolate}
+.rings{position:absolute;left:50%;top:44%;width:0;height:0;z-index:-1}
+.rings span{position:absolute;left:-240px;top:-240px;width:480px;height:480px;border-radius:50%;border:1px solid var(--a-ring);opacity:0;animation:ripple 6s var(--ease) infinite}
+.rings span:nth-child(2){animation-delay:2s}
+.rings span:nth-child(3){animation-delay:4s}
+@keyframes ripple{0%{transform:scale(.45);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.stage-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);padding:6px 12px;border-radius:999px;background:var(--field);border:1px solid var(--line)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:live 2s infinite}
+@keyframes live{0%{box-shadow:0 0 0 0 rgba(52,211,153,.6)}70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
 
-/* 2-COL / FONT GRID */
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
-.f-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--t2);padding:7px 4px;cursor:pointer;font-size:13px;transition:all .12s;text-align:center;font-family:inherit}
-.f-btn:hover{border-color:var(--border-h);color:var(--t1);background:var(--raised)}
-.f-btn.on{border-color:var(--accent);color:var(--accent);background:var(--accent-d)}
+.tilt{perspective:1000px;width:100%;max-width:360px}
+.pv-card{position:relative;background:#fff;border-radius:var(--r-lg);padding:22px;display:flex;flex-direction:column;align-items:center;width:100%;box-shadow:0 30px 80px -25px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.06);transform-style:preserve-3d;transition:transform .5s var(--ease),background .4s}
+.pv-card::before{content:'';position:absolute;inset:-1.5px;border-radius:calc(var(--r-lg) + 1.5px);background:var(--grad);z-index:-1;opacity:.8;filter:blur(18px);animation:glow 6s ease-in-out infinite alternate}
+@keyframes glow{from{opacity:.35}to{opacity:.75}}
+.pv-card .shine{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.35),transparent 45%);opacity:0;transition:opacity .4s;mix-blend-mode:soft-light}
+.tilt:hover .shine{opacity:1}
+.qr-wrap{position:relative;line-height:0;border-radius:10px;overflow:hidden;max-width:100%}
+#qr-cont canvas{display:block;max-width:100%;height:auto;border-radius:6px}
+.qr-wrap.pop{animation:qrPop .55s var(--spring)}
+@keyframes qrPop{0%{transform:scale(.94);opacity:.4;filter:blur(3px)}100%{transform:none;opacity:1;filter:none}}
+.scan{position:absolute;left:0;right:0;height:38%;top:-40%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(62,240,208,.18) 85%,rgba(62,240,208,.7));border-bottom:2px solid rgba(62,240,208,.9);mix-blend-mode:multiply;animation:scan 3.6s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes scan{0%{top:-40%}60%,100%{top:105%}}
+.empty-veil{position:absolute;inset:0;display:grid;place-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);color:#3a3d5c;font:600 12px 'Space Grotesk',sans-serif;line-height:1.4;text-align:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .4s}
+.empty-veil i{display:block;font-size:22px;margin-bottom:6px;color:#6246ea}
+.pv-card.empty .empty-veil{opacity:1}
+.pv-card.empty .scan{display:none}
+.lbl-a,.lbl-b,.lbl-s{width:100%;text-align:center;word-break:break-word;line-height:1.3}
+.lbl-a{margin-bottom:14px}
+.lbl-b{margin-top:12px}
+.lbl-s{margin-top:8px}
 
-/* DISABLED */
-.fields-wrap{transition:opacity .2s}
-.fields-wrap.off{opacity:.38;pointer-events:none}
+/* ═══ BUTTONS ═══ */
+.actions{display:grid;grid-template-columns:repeat(4,auto);gap:8px;justify-content:center}
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:var(--r-sm);font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--field);color:var(--t1);white-space:nowrap;transition:all .3s var(--ease);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.btn:hover{border-color:var(--line-h);background:var(--field-h);transform:translateY(-2px)}
+.btn:active{transform:scale(.97)}
+.btn i{transition:transform .45s var(--spring)}
+.btn:hover i{transform:translateY(-1px) scale(1.1)}
+.btn-p{background:var(--grad);color:#07080f;border-color:transparent;box-shadow:0 10px 26px -10px var(--a2)}
+.btn-p:hover{background:var(--grad);box-shadow:0 14px 30px -10px var(--a2)}
+.btn-ok{color:var(--ok);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)}
+.btn-ok:hover{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.5)}
+.btn-danger{color:var(--danger);border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.08)}
+.btn-danger:hover{background:rgba(251,113,133,.15);border-color:rgba(251,113,133,.5)}
+.btn.done{color:var(--ok);border-color:rgba(52,211,153,.5)}
+.rip{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:currentColor;opacity:.3;pointer-events:none;animation:rip .6s var(--ease) forwards}
+@keyframes rip{to{transform:scale(30);opacity:0}}
 
-/* HISTORY VIEW */
-#view-hist{flex-direction:column;padding:28px 24px;min-height:calc(100vh - 58px)}
-.hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
-.hist-top h2{font-size:16px;font-weight:600}
-.hist-count{font-size:12px;color:var(--t2);margin-left:6px;font-weight:400}
-.hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.hist-card{background:var(--base);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:border-color .15s}
-.hist-card:hover{border-color:var(--border-h)}
-.hist-thumb{background:var(--surface);display:flex;align-items:center;justify-content:center;padding:16px;cursor:pointer}
-.hist-thumb img{width:100px;height:100px;border-radius:6px;display:block}
-.hist-body{padding:12px 14px}
-.hist-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-.hist-meta{font-size:11px;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.hist-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;background:var(--accent-d);color:var(--accent);border:1px solid var(--accent-g)}
-.hist-actions{display:flex;gap:6px}
-.hist-actions .btn{padding:6px 10px;font-size:11px;flex:1;justify-content:center}
-.hist-empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--t2)}
-.hist-empty svg{width:44px;height:44px;color:var(--t3);margin:0 auto 14px;display:block}
-.hist-empty h3{font-size:15px;color:var(--t1);margin-bottom:6px}
-.hist-empty p{font-size:13px;line-height:1.6}
+/* ═══ PRINT BAR ═══ */
+.print-bar{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:8px;padding:8px;border-radius:var(--r);background:var(--field);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.pb-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--t2);padding-left:6px}
+.stepper{display:flex;align-items:center;background:var(--field);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.stepper button{width:32px;height:34px;color:var(--t2);display:grid;place-items:center;font-size:11px;transition:background .2s,color .2s}
+.stepper button:hover{background:var(--field-h);color:var(--t1)}
+.stepper input{width:44px;background:none;border:none;outline:none;text-align:center;font-size:14px;font-weight:600;-moz-appearance:textfield;appearance:textfield;padding:0}
+.stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.stepper .unit{font-size:11px;color:var(--t3);padding-right:4px}
+.stepper select{width:auto;background:none;border:none;padding:7px 26px 7px 12px;font-size:14px;font-weight:600;box-shadow:none}
+.stepper select:focus{box-shadow:none;background:none}
+.stepper .sel::after{right:10px}
+.chk{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;font-size:12px;color:var(--t2);padding:0 6px}
+.chk input{position:absolute;opacity:0;width:0;height:0}
+.chk .box{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--line-h);display:grid;place-items:center;font-size:10px;color:transparent;transition:all .3s var(--spring)}
+.chk input:checked+.box{background:var(--grad);border-color:transparent;color:#07080f;transform:scale(1.08)}
+.chk input:focus-visible+.box{outline:2px solid var(--acc);outline-offset:2px}
 
-/* ═══ GUIDE OVERLAY ═══ */
-.guide-overlay{position:fixed;inset:0;background:rgba(8,8,18,0.88);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px}
+/* ═══ HISTORY ═══ */
+#view-hist{display:none;padding:28px max(22px,env(safe-area-inset-right)) 50px max(22px,env(safe-area-inset-left));max-width:1440px;margin:0 auto;align-content:start}
+#view-hist.on{display:block}
+.hist-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.hist-top h2{font-size:24px;font-weight:700;letter-spacing:-.03em;display:flex;align-items:center;gap:12px}
+.hist-top h2 small{font-size:13px;font-weight:500;color:var(--t2);letter-spacing:0}
+.hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.hist-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .45s var(--ease),border-color .3s,box-shadow .45s;animation:rise .6s var(--ease) both;animation-delay:calc(var(--i,0) * 55ms)}
+.hist-card:hover{transform:translateY(-5px);border-color:var(--line-h);box-shadow:var(--shadow)}
+.hist-card.out{animation:out .35s var(--ease) forwards}
+@keyframes out{to{opacity:0;transform:scale(.9)}}
+.hist-thumb{width:100%;display:grid;place-items:center;padding:20px;background:linear-gradient(160deg,var(--a-soft),transparent);position:relative}
+.hist-thumb img{width:110px;height:110px;border-radius:10px;display:block;box-shadow:0 12px 30px -12px rgba(0,0,0,.6);transition:transform .5s var(--spring)}
+.hist-card:hover .hist-thumb img{transform:scale(1.07) rotate(-2deg)}
+.hist-thumb .hover-hint{position:absolute;bottom:8px;font-size:11px;font-weight:600;color:var(--acc);opacity:0;transform:translateY(6px);transition:all .35s var(--ease)}
+.hist-card:hover .hover-hint{opacity:1;transform:none}
+.hist-body{padding:14px 16px 16px}
+.hist-name{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.hist-name i{color:var(--acc);font-size:12px}
+.hist-meta{font-size:11px;color:var(--t2);margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--a-soft);color:var(--acc);border:1px solid var(--a-ring)}
+.hist-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hist-actions .btn{padding:8px;font-size:12px}
+.hist-empty{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--t2);animation:rise .6s var(--ease) both}
+.hist-empty .big{width:84px;height:84px;margin:0 auto 18px;border-radius:24px;display:grid;place-items:center;font-size:34px;color:var(--acc);background:var(--a-soft);border:1px solid var(--a-ring);animation:float 4s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px)}}
+.hist-empty h3{font-size:18px;color:var(--t1);margin-bottom:6px}
+
+/* ═══ GUIDE ═══ */
+.guide-overlay{position:fixed;inset:0;z-index:900;display:grid;place-items:center;padding:16px;background:rgba(5,6,14,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fadeIn .35s var(--ease)}
 .guide-overlay.hidden{display:none}
-.guide-modal{background:var(--base);border:1px solid var(--border-h);border-radius:18px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.6)}
-.guide-progress{height:3px;background:var(--hover)}
-.guide-progress-bar{height:100%;background:var(--accent);transition:width .35s cubic-bezier(.4,0,.2,1)}
-.guide-inner{padding:32px 32px 28px}
-.guide-icon-wrap{width:52px;height:52px;border-radius:14px;background:var(--accent-d);border:1px solid var(--accent-g);display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:var(--accent)}
-.guide-icon-wrap svg{width:24px;height:24px}
-.guide-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-.guide-title{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:12px;line-height:1.25}
-.guide-body{font-size:13px;color:var(--t2);line-height:1.75}
-.guide-body p{margin-bottom:10px}
-.guide-body p:last-child{margin-bottom:0}
-.guide-body strong{color:var(--t1);font-weight:600}
-.guide-body ul{padding-left:18px;margin-bottom:10px}
-.guide-body ul li{margin-bottom:5px}
-.guide-body .tip{background:var(--accent-d);border:1px solid var(--accent-g);border-radius:var(--r-sm);padding:8px 12px;font-size:12px;color:var(--t1);margin-top:10px}
-.guide-footer{display:flex;align-items:center;justify-content:space-between;padding:0 32px 28px}
-.guide-step-label{font-size:12px;color:var(--t3)}
-.guide-next{padding:10px 22px;border-radius:var(--r-sm);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;background:var(--accent);color:#0c0c16;border:none;transition:filter .15s;display:flex;align-items:center;gap:8px}
-.guide-next:hover{filter:brightness(1.1)}
-.guide-next:active{transform:scale(.97)}
-@keyframes guideStepIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
-.guide-inner{animation:guideStepIn .25s ease}
+@keyframes fadeIn{from{opacity:0}}
+.guide-modal{position:relative;width:100%;max-width:480px;max-height:calc(100dvh - 32px);overflow-x:hidden;overflow-y:auto;background:var(--panel-solid);border:1px solid var(--line-h);border-radius:26px;box-shadow:0 40px 100px -20px rgba(0,0,0,.7);animation:modalIn .5s var(--spring)}
+@keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(.95)}}
+.guide-modal::before{content:'';position:absolute;top:-80px;right:-80px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,var(--a2),transparent 70%);opacity:.25;pointer-events:none}
+.guide-skip{position:absolute;top:14px;right:14px;z-index:2}
+.guide-inner{padding:34px 32px 22px;animation:stepIn .4s var(--ease)}
+@keyframes stepIn{from{opacity:0;transform:translateX(22px)}}
+.g-ico{width:56px;height:56px;border-radius:17px;background:var(--grad);color:#07080f;display:grid;place-items:center;font-size:22px;margin-bottom:18px;box-shadow:0 12px 30px -10px var(--a2);animation:popIn .5s var(--spring)}
+.g-tag{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:6px}
+.g-title{font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1.2;margin-bottom:12px}
+.g-body{font-size:13.5px;color:var(--t2);line-height:1.7}
+.g-body p{margin-bottom:10px}
+.g-body strong{color:var(--t1)}
+.g-body ul{list-style:none;margin-bottom:10px}
+.g-body li{position:relative;padding-left:20px;margin-bottom:6px}
+.g-body li::before{content:'\f00c';font:900 10px 'Font Awesome 6 Free';position:absolute;left:0;top:5px;color:var(--acc)}
+.tip{display:flex;gap:10px;align-items:flex-start;background:var(--a-soft);border:1px solid var(--a-ring);border-radius:12px;padding:10px 12px;font-size:12.5px;color:var(--t1);margin-top:12px}
+.tip i{color:var(--acc);margin-top:3px}
+.guide-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 32px 28px}
+.dots{display:flex;gap:6px}
+.dots span{width:7px;height:7px;border-radius:4px;background:var(--line-h);transition:all .45s var(--spring)}
+.dots span.on{width:24px;background:var(--grad)}
 
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--raised);border:1px solid var(--border);border-radius:var(--r);padding:9px 18px;font-size:13px;color:var(--t1);opacity:0;transition:all .25s;z-index:999;pointer-events:none;white-space:nowrap}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.ok{border-color:rgba(34,197,94,.4);color:var(--ok)}
-.toast.warn{border-color:rgba(245,158,11,.4);color:var(--warn)}
-.toast.err{border-color:rgba(239,68,68,.4);color:var(--danger)}
+/* ═══ TOAST ═══ */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));z-index:999;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);padding:11px 18px;border-radius:14px;background:var(--panel-solid);border:1px solid var(--line-h);box-shadow:var(--shadow);font-size:13px;font-weight:500;color:var(--t1);pointer-events:none;opacity:0;transform:translate(-50%,24px) scale(.95);transition:all .45s var(--spring)}
+.toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.toast i{font-size:15px;color:var(--acc)}
+.toast.ok i{color:var(--ok)} .toast.warn i{color:var(--warn)} .toast.err i{color:var(--danger)}
 
-/* PRINT CONTROLS */
-.print-row{display:flex;align-items:center;gap:8px;margin-top:10px;position:relative;z-index:1;justify-content:center;flex-wrap:wrap}
-.print-lbl{font-size:12px;color:var(--t2)}
-.pct-wrap{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden}
-.pct-wrap input[type="number"]{width:44px;background:none;border:none;color:var(--t1);font-size:13px;font-family:'Roboto',sans-serif;font-weight:500;text-align:center;outline:none;padding:6px 2px;-moz-appearance:textfield;appearance:textfield}
-.pct-wrap input[type="number"]::-webkit-inner-spin-button,.pct-wrap input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none}
-.pct-sym{font-size:12px;color:var(--t2);padding-right:8px}
-.pct-btn{background:none;border:none;border-right:1px solid var(--border);color:var(--t2);cursor:pointer;font-size:17px;width:28px;height:34px;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
-.pct-btn:last-of-type{border-right:none;border-left:1px solid var(--border)}
-.pct-btn:hover{background:var(--raised);color:var(--t1)}
-/* PRINT OUTPUT */
+/* ═══ PRINT OUTPUT ═══ */
 #print-area{display:none}
 @page{margin:0;size:auto}
 @media print{
-  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;animation:none!important}
   html,body{background:#fff!important;margin:0!important;padding:0!important}
   body>*{display:none!important}
-  #print-area{display:flex!important;flex-wrap:wrap;align-content:flex-start;justify-content:flex-start;gap:6mm;margin:0;padding:10mm;box-sizing:border-box;background:#fff!important}
-  .pf{display:flex;flex-direction:column;align-items:center;padding:8mm;border:0.6pt dashed #aaa;position:relative;background:#fff;break-inside:avoid}
+  #print-area{display:flex!important;flex-wrap:wrap;align-content:flex-start;gap:6mm;padding:10mm;background:#fff!important}
+  .pf{display:flex;flex-direction:column;align-items:center;padding:8mm;border:.6pt dashed #aaa;position:relative;background:#fff;break-inside:avoid}
   .pf::after{content:'✂  cut here';position:absolute;bottom:-6pt;left:50%;transform:translateX(-50%);font-size:7pt;color:#bbb;background:#fff;padding:0 3mm;letter-spacing:.08em;font-family:sans-serif;white-space:nowrap}
   .pf-qr{display:block}
   .pf-above,.pf-below,.pf-sub{width:100%;text-align:center;word-break:break-word}
   .pf-above{margin-bottom:7mm}
   .pf-below{margin-top:7mm}
   .pf-sub{margin-top:3mm}
-  .pf-fold,.pf-fold2{width:100%;border-top:0.6pt dashed #aaa;position:relative;height:6pt}
+  .pf-qr+.pf-sub{margin-top:6mm}
+  .pf-fold,.pf-fold2{width:100%;border-top:.6pt dashed #aaa;position:relative;height:6pt}
   .pf-fold{margin-top:6mm}
-  .pf-fold::after{content:'① fold backward';font-size:7pt;color:#bbb;background:#fff;padding:0 3mm;letter-spacing:.08em;font-family:sans-serif;white-space:nowrap;position:absolute;top:-5pt;left:50%;transform:translateX(-50%)}
-  .pf-fold2::after{content:'② fold under';font-size:7pt;color:#bbb;background:#fff;padding:0 3mm;letter-spacing:.08em;font-family:sans-serif;white-space:nowrap;position:absolute;top:-5pt;left:50%;transform:translateX(-50%)}
+  .pf-fold::after,.pf-fold2::after{font-size:7pt;color:#bbb;background:#fff;padding:0 3mm;letter-spacing:.08em;font-family:sans-serif;white-space:nowrap;position:absolute;top:-5pt;left:50%;transform:translateX(-50%)}
+  .pf-fold::after{content:'① fold backward'}
+  .pf-fold2::after{content:'② fold under'}
   .pf-stand{height:28mm;width:100%}
   .pf-tuck{height:14mm;width:100%}
 }
-/* RESPONSIVE */
-@media(max-width:860px){#view-gen{grid-template-columns:305px 1fr}}
-@media(max-width:680px){
-  #view-gen{grid-template-columns:1fr}
-  .preview-area{position:static;height:auto;padding:22px 14px;order:-1;border-bottom:1px solid var(--border)}
-  .sidebar{max-height:none;border-right:none}
-  .hdr-note{display:none}
-  #view-hist{padding:20px 14px}
-  .guide-inner{padding:24px 22px 20px}
-  .guide-footer{padding:0 22px 22px}
-  .guide-title{font-size:18px}
-  input[type="text"],input[type="password"],select,input[type="number"]{font-size:16px}
+
+/* ═══ RESPONSIVE ═══ */
+/* 16px inputs on touch devices: iOS zooms into anything smaller */
+@media (pointer:coarse),(max-width:1024px){
+  input[type="text"],input[type="password"],select,.stepper input,.stepper select{font-size:16px}
 }
-@media(max-width:420px){
-  .hdr{padding:10px 12px;gap:8px}
-  .hdr-title{font-size:14px}
-  .sidebar{padding:13px 11px 24px}
-  .preview-area{padding:16px 11px}
-  .pv-card{padding:15px}
-  .actions{flex-direction:column;width:100%}
-  .btn{justify-content:center}
-  .tab-btn{padding:5px 10px;font-size:11px}
-  .hist-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-  input[type="text"],input[type="password"],select,input[type="number"]{font-size:16px}
-  .guide-modal{border-radius:14px}
+@media (max-width:1100px){#view-gen{grid-template-columns:340px 1fr;gap:18px}}
+@media (max-width:860px){
+  :root{--hdr:60px}
+  #view-gen{grid-template-columns:1fr;padding-top:16px}
+  .stage{position:relative;top:0;min-height:0;order:-1;padding:26px 16px 18px}
+  .sidebar{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .sidebar>.new-btn,.sidebar>.panel:last-child{grid-column:1/-1}
+  .brand-sub{display:none}
+  .tab-btn{min-width:0}
+}
+@media (max-width:640px){
+  .sidebar{grid-template-columns:1fr}
+  .hdr{gap:8px;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+  .brand-txt{display:none}
+  .tabs{margin-left:0;flex:1}
+  .tab-btn{flex:1;padding:8px 6px}
+  .icon-btn{width:36px;height:36px}
+  #help-btn{display:none}
+  #view-gen{padding-left:12px;padding-right:12px;gap:14px}
+  .panel{padding:16px;border-radius:20px}
+  .stage{border-radius:24px}
+  .actions{grid-template-columns:1fr 1fr;width:100%;max-width:360px}
+  .actions .btn{padding:12px}
+  .print-bar{width:100%;max-width:360px}
+  #view-hist{padding:20px 12px 40px}
+  .hist-top h2{font-size:20px}
+  .hist-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .hist-thumb img{width:92px;height:92px}
+  .hist-actions .btn span{display:none}
+  .guide-inner{padding:28px 22px 18px}
+  .guide-footer{padding:0 22px 22px}
+  .g-title{font-size:19px}
+}
+@media (max-width:340px){
+  .tab-btn .tab-txt{display:none}
+  .pv-card{padding:16px}
+}
+@media (hover:none){
+  .btn:hover,.s-btn:hover,.f-btn:hover,.hist-card:hover,.icon-btn:hover{transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .scan,.rings{display:none}
 }
 </style>
 </head>
 <body>
 
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+
 <!-- ═══ FIRST-VISIT GUIDE ═══ -->
-<div id="guide" class="guide-overlay hidden">
+<div id="guide" class="guide-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="g-title">
   <div class="guide-modal">
-    <div class="guide-progress"><div class="guide-progress-bar" id="guide-bar"></div></div>
+    <button class="icon-btn guide-skip" onclick="closeGuide()" title="Skip guide" aria-label="Skip guide"><i class="fa-solid fa-xmark"></i></button>
     <div class="guide-inner" id="guide-inner"></div>
     <div class="guide-footer">
-      <span class="guide-step-label" id="guide-step-lbl"></span>
-      <button class="guide-next" id="guide-next" onclick="nextStep()">
-        <span id="guide-next-txt">Next</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
+      <div class="dots" id="guide-dots"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="guide-back" onclick="stepGuide(-1)"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="btn btn-p" id="guide-next" onclick="stepGuide(1)"><span id="guide-next-txt">Next</span><i class="fa-solid fa-arrow-right"></i></button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ═══ HEADER ═══ -->
 <header class="hdr">
-  <div class="hdr-logo">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
-      <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-      <circle cx="17.5" cy="17.5" r="1.5" fill="currentColor" stroke="none"/>
-      <path d="M14 14h3v3"/>
-    </svg>
+  <div class="logo" aria-hidden="true"><i class="fa-solid fa-wifi"></i></div>
+  <div class="brand-txt">
+    <div class="brand-title">WiFi <b>QR</b> Generator</div>
+    <div class="brand-sub">Create, customise &amp; share</div>
   </div>
-  <div>
-    <div class="hdr-title">WiFi QR Generator</div>
-    <div class="hdr-sub">Create, customise &amp; share</div>
+  <nav class="tabs" id="tabs" data-v="gen" role="tablist">
+    <span class="tab-ind" aria-hidden="true"></span>
+    <button class="tab-btn on" role="tab" aria-selected="true" data-view="gen" onclick="showView('gen')"><i class="fa-solid fa-qrcode"></i><span class="tab-txt">Generator</span></button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-view="hist" onclick="showView('hist')"><i class="fa-solid fa-clock-rotate-left"></i><span class="tab-txt">History</span><span class="tab-count" id="tab-count">0</span></button>
+  </nav>
+  <div class="hdr-tools">
+    <button class="icon-btn" id="help-btn" onclick="openGuide()" title="Show guide" aria-label="Show guide"><i class="fa-solid fa-circle-question"></i></button>
+    <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme"><i class="fa-solid fa-moon" id="theme-ico"></i></button>
+    <a class="icon-btn" href="mailto:rootdeyan@outlook.com?subject=WiFi%20QR%20Generator%20Feedback" title="Send feedback by email" aria-label="Send feedback"><i class="fa-solid fa-envelope"></i></a>
   </div>
-  <div class="hdr-tabs">
-    <button class="tab-btn on" onclick="showView('gen')">Generator</button>
-    <button class="tab-btn" onclick="showView('hist')">History</button>
-  </div>
-  <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light / dark theme" style="margin-left:8px">
-    <svg id="theme-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-  </button>
-  <a class="feedback-btn" href="mailto:rootdeyan@outlook.com?subject=WiFi%20QR%20Generator%20Feedback" title="Send feedback by email">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-    Feedback
-  </a>
-  <div class="hdr-note">Needs internet<br>for QR library</div>
 </header>
 
 <!-- ═══ GENERATOR VIEW ═══ -->
-<div id="view-gen" class="view on">
+<main id="view-gen" class="view on">
   <aside class="sidebar">
-
-    <!-- NEW QR BUTTON -->
-    <button onclick="resetQR()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#0c0c16;border:none;border-radius:var(--r);padding:11px 14px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:18px;transition:filter .15s;letter-spacing:.01em" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      New QR Code
-    </button>
+    <button class="new-btn" onclick="resetQR()"><i class="fa-solid fa-plus"></i> New QR Code</button>
 
     <!-- NETWORK -->
-    <div class="sec">
-      <div class="sec-hdr"><span class="sec-lbl">Network</span><span class="sec-line"></span></div>
+    <section class="panel" style="--i:1">
+      <div class="p-head"><div class="p-ico"><i class="fa-solid fa-tower-broadcast"></i></div><div class="p-title">Network</div><div class="p-step">01</div></div>
       <div class="field">
-        <label>Network name (SSID)</label>
-        <input type="text" id="f-ssid" placeholder="e.g. My Home WiFi" oninput="debouncedUpdate()">
+        <label class="f-lbl" for="f-ssid">Network name (SSID)</label>
+        <div class="inp"><i class="fa-solid fa-wifi"></i><input type="text" id="f-ssid" placeholder="e.g. My Home WiFi" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="debouncedUpdate()"></div>
       </div>
-      <div class="field">
-        <label>Password</label>
-        <div class="pw-wrap">
-          <input type="password" id="f-pw" placeholder="Your WiFi password" oninput="debouncedUpdate()">
-          <button class="pw-eye" onclick="togglePw()" title="Show / hide password">👁</button>
+      <div class="field" id="pw-field">
+        <label class="f-lbl" for="f-pw">Password</label>
+        <div class="inp pw"><i class="fa-solid fa-key"></i>
+          <input type="password" id="f-pw" placeholder="Your WiFi password" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="debouncedUpdate()">
+          <button type="button" class="pw-eye" onclick="togglePw()" title="Show / hide password" aria-label="Show password"><i class="fa-solid fa-eye" id="pw-ico"></i></button>
         </div>
       </div>
       <div class="field">
-        <label>Security type</label>
-        <select id="f-sec" onchange="update()">
-          <option value="WPA">WPA2 / WPA3 — recommended for modern routers</option>
-          <option value="WEP">WEP — legacy routers only</option>
-          <option value="nopass">Open — no password required</option>
-        </select>
+        <label class="f-lbl" for="f-sec">Security type</label>
+        <div class="inp sel"><i class="fa-solid fa-shield-halved"></i>
+          <select id="f-sec" onchange="update()">
+            <option value="WPA">WPA2 / WPA3 — modern routers</option>
+            <option value="WEP">WEP — legacy routers only</option>
+            <option value="nopass">Open — no password</option>
+          </select>
+        </div>
       </div>
-      <div class="t-row" onclick="toggle('hidden')">
-        <div class="t-info"><div class="t-name">Hidden network</div><div class="t-hint">Enable if SSID is not publicly broadcast</div></div>
-        <div class="sw" id="sw-hidden"></div>
-      </div>
-    </div>
+      <button type="button" class="t-row" role="switch" aria-checked="false" id="sw-hidden" onclick="toggle('hidden')">
+        <span><span class="t-name"><i class="fa-solid fa-eye-slash"></i>Hidden network</span><span class="t-hint">Enable if the SSID isn't broadcast</span></span>
+        <span class="sw"></span>
+      </button>
+    </section>
 
     <!-- DESIGN -->
-    <div class="sec">
-      <div class="sec-hdr"><span class="sec-lbl">Design</span><span class="sec-line"></span></div>
+    <section class="panel" style="--i:2">
+      <div class="p-head"><div class="p-ico"><i class="fa-solid fa-palette"></i></div><div class="p-title">Design</div><div class="p-step">02</div></div>
+      <div class="field"><div class="f-lbl">Dot style <span class="f-hint">QR module shape</span></div><div class="s-grid" id="dot-grid"></div></div>
+      <div class="field"><div class="f-lbl">Corner style <span class="f-hint">Position markers</span></div><div class="s-grid" id="corner-grid"></div></div>
       <div class="field">
-        <div class="field-lbl">Dot style — how individual QR modules look</div>
-        <div class="s-grid" id="dot-grid"></div>
-      </div>
-      <div class="field">
-        <div class="field-lbl">Corner style — the three position markers</div>
-        <div class="s-grid" id="corner-grid"></div>
-      </div>
-      <div class="field">
-        <div class="field-lbl">Colours</div>
+        <div class="f-lbl">Colours</div>
         <div class="c-grid">
-          <div class="c-btn" onclick="document.getElementById('cp-dots').click()">
-            <div class="swatch" id="sw-dots" style="background:#000000"></div>
-            <div class="c-info"><div class="c-name">Dots</div><div class="c-hex" id="hx-dots">#000000</div></div>
-            <input type="color" id="cp-dots" value="#000000" oninput="onClr('dots',this.value)">
-          </div>
-          <div class="c-btn" onclick="document.getElementById('cp-bg').click()">
-            <div class="swatch" id="sw-bg" style="background:#ffffff;border-color:rgba(0,0,0,0.15)"></div>
-            <div class="c-info"><div class="c-name">Background</div><div class="c-hex" id="hx-bg">#ffffff</div></div>
-            <input type="color" id="cp-bg" value="#ffffff" oninput="onClr('bg',this.value)">
-          </div>
+          <label class="c-btn"><span class="swatch" id="sw-dots" style="background:#000000"></span><span><span class="c-name">Dots</span><br><span class="c-hex" id="hx-dots">#000000</span></span><input type="color" id="cp-dots" value="#000000" oninput="onClr('dots',this.value)" aria-label="Dot colour"></label>
+          <label class="c-btn"><span class="swatch" id="sw-bg" style="background:#ffffff"></span><span><span class="c-name">Background</span><br><span class="c-hex" id="hx-bg">#ffffff</span></span><input type="color" id="cp-bg" value="#ffffff" oninput="onClr('bg',this.value)" aria-label="Background colour"></label>
         </div>
       </div>
       <div class="field">
-        <div class="field-lbl">Error correction — higher = more scan-reliable</div>
-        <select id="f-ecc" onchange="update()">
-          <option value="L">L — Low (7%) — denser, harder to scan</option>
-          <option value="M" selected>M — Medium (15%) — recommended</option>
-          <option value="Q">Q — Quartile (25%) — more resilient</option>
-          <option value="H">H — High (30%) — best for logo overlays</option>
-        </select>
+        <label class="f-lbl" for="f-ecc">Error correction <span class="f-hint">Higher = more resilient</span></label>
+        <div class="inp sel"><i class="fa-solid fa-life-ring"></i>
+          <select id="f-ecc" onchange="update()">
+            <option value="L">L — Low (7%)</option>
+            <option value="M" selected>M — Medium (15%) · recommended</option>
+            <option value="Q">Q — Quartile (25%)</option>
+            <option value="H">H — High (30%)</option>
+          </select>
+        </div>
       </div>
-    </div>
+    </section>
 
     <!-- LABELS -->
-    <div class="sec">
-      <div class="sec-hdr"><span class="sec-lbl">Labels</span><span class="sec-line"></span></div>
-      <div class="t-row" onclick="toggle('labels')" style="margin-bottom:10px">
-        <div class="t-info"><div class="t-name">Show labels</div><div class="t-hint">Display text alongside the QR code</div></div>
-        <div class="sw on" id="sw-labels"></div>
-      </div>
-      <div class="fields-wrap" id="lbl-fields">
+    <section class="panel" style="--i:3">
+      <div class="p-head"><div class="p-ico"><i class="fa-solid fa-font"></i></div><div class="p-title">Labels</div><div class="p-step">03</div></div>
+      <button type="button" class="t-row" role="switch" aria-checked="true" id="sw-labels" onclick="toggle('labels')">
+        <span><span class="t-name"><i class="fa-solid fa-tag"></i>Show labels</span><span class="t-hint">Text alongside the QR code</span></span>
+        <span class="sw"></span>
+      </button>
+      <div class="fields-wrap" id="lbl-fields"><div>
         <div class="field">
-          <div class="field-lbl">Position</div>
-          <div class="s-grid" style="grid-template-columns:1fr 1fr">
-            <button class="s-btn" data-pos="below" onclick="setPos('below')">
-              <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="14" rx="3" fill="currentColor" opacity=".2"/><rect x="3" y="18" width="26" height="6" rx="2.5" fill="currentColor" opacity=".85"/></svg>Below
+          <div class="f-lbl">Position</div>
+          <div class="s-grid two">
+            <button type="button" class="s-btn" data-pos="below" onclick="setPos('below')">
+              <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="14" rx="3" fill="currentColor" opacity=".25"/><rect x="3" y="18" width="26" height="6" rx="2.5" fill="currentColor"/></svg>Below
             </button>
-            <button class="s-btn on" data-pos="both" onclick="setPos('both')">
-              <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="5" rx="2" fill="currentColor" opacity=".85"/><rect x="3" y="8" width="26" height="10" rx="2" fill="currentColor" opacity=".2"/><rect x="3" y="21" width="26" height="3" rx="1.5" fill="currentColor" opacity=".6"/></svg>Both
+            <button type="button" class="s-btn on" data-pos="both" onclick="setPos('both')">
+              <svg width="32" height="26" viewBox="0 0 32 26"><rect x="3" y="1" width="26" height="5" rx="2" fill="currentColor"/><rect x="3" y="8" width="26" height="10" rx="2" fill="currentColor" opacity=".25"/><rect x="3" y="21" width="26" height="3" rx="1.5" fill="currentColor" opacity=".7"/></svg>Both
             </button>
           </div>
         </div>
         <div class="field">
-          <div class="field-lbl"><span>Subtitle</span><span class="field-hint">Smaller secondary text</span></div>
-          <input type="text" id="f-st" value="Scan to connect" oninput="updLbls()">
+          <label class="f-lbl" for="f-st">Subtitle <span class="f-hint">Smaller secondary text</span></label>
+          <div class="inp"><i class="fa-solid fa-quote-left"></i><input type="text" id="f-st" value="Scan to connect" oninput="updLbls()"></div>
         </div>
         <div class="field">
-          <div class="field-lbl">Font family</div>
+          <div class="f-lbl">Font family</div>
           <div class="f-grid">
-            <button class="f-btn on" data-ff="sys" onclick="setFont('sys')" style="font-family:'Roboto',sans-serif">Roboto</button>
-            <button class="f-btn" data-ff="mono" onclick="setFont('mono')" style="font-family:'Roboto Mono',monospace">Mono</button>
-            <button class="f-btn" data-ff="serif" onclick="setFont('serif')" style="font-family:Georgia,serif">Serif</button>
+            <button type="button" class="f-btn on" data-ff="sys" onclick="setFont('sys')" style="font-family:'Roboto',sans-serif">Roboto</button>
+            <button type="button" class="f-btn" data-ff="mono" onclick="setFont('mono')" style="font-family:'Roboto Mono',monospace">Mono</button>
+            <button type="button" class="f-btn" data-ff="serif" onclick="setFont('serif')" style="font-family:Georgia,serif">Serif</button>
           </div>
         </div>
         <div class="field">
-          <div class="field-lbl">Text colours</div>
+          <div class="f-lbl">Text colours</div>
           <div class="c-grid">
-            <div class="c-btn" onclick="document.getElementById('cp-mc').click()">
-              <div class="swatch" id="sw-mc" style="background:#000000"></div>
-              <div class="c-info"><div class="c-name">Main text</div><div class="c-hex" id="hx-mc">#000000</div></div>
-              <input type="color" id="cp-mc" value="#000000" oninput="onLClr('m',this.value)">
-            </div>
-            <div class="c-btn" onclick="document.getElementById('cp-sc').click()">
-              <div class="swatch" id="sw-sc" style="background:#000000"></div>
-              <div class="c-info"><div class="c-name">Subtitle text</div><div class="c-hex" id="hx-sc">#000000</div></div>
-              <input type="color" id="cp-sc" value="#000000" oninput="onLClr('s',this.value)">
-            </div>
+            <label class="c-btn"><span class="swatch" id="sw-mc" style="background:#000000"></span><span><span class="c-name">Main</span><br><span class="c-hex" id="hx-mc">#000000</span></span><input type="color" id="cp-mc" value="#000000" oninput="onLClr('m',this.value)" aria-label="Main text colour"></label>
+            <label class="c-btn"><span class="swatch" id="sw-sc" style="background:#000000"></span><span><span class="c-name">Subtitle</span><br><span class="c-hex" id="hx-sc">#000000</span></span><input type="color" id="cp-sc" value="#000000" oninput="onLClr('s',this.value)" aria-label="Subtitle colour"></label>
           </div>
         </div>
-        <div class="t-row" onclick="toggle('bold')">
-          <div class="t-info"><div class="t-name">Bold main text</div></div>
-          <div class="sw on" id="sw-bold"></div>
-        </div>
-      </div>
-    </div>
+        <button type="button" class="t-row" role="switch" aria-checked="true" id="sw-bold" onclick="toggle('bold')">
+          <span class="t-name"><i class="fa-solid fa-bold"></i>Bold main text</span>
+          <span class="sw"></span>
+        </button>
+      </div></div>
+    </section>
   </aside>
 
   <!-- PREVIEW -->
-  <main class="preview-area">
-    <div class="pv-card">
-      <div class="lbl-a" id="la"></div>
-      <div id="qr-cont"></div>
-      <div class="lbl-b" id="lb"></div>
-      <div class="lbl-s" id="ls"></div>
+  <section class="stage" aria-label="Preview">
+    <div class="rings" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="stage-tag"><span class="live-dot"></span>Live preview</div>
+    <div class="tilt" id="tilt">
+      <div class="pv-card empty" id="pv-card">
+        <div class="lbl-a" id="la"></div>
+        <div class="qr-wrap" id="qr-wrap">
+          <div id="qr-cont"></div>
+          <div class="scan" aria-hidden="true"></div>
+          <div class="empty-veil"><div><i class="fa-solid fa-wand-magic-sparkles"></i>Enter a network name<br>to generate your code</div></div>
+        </div>
+        <div class="lbl-b" id="lb"></div>
+        <div class="lbl-s" id="ls"></div>
+        <div class="shine"></div>
+      </div>
     </div>
     <div class="actions">
-      <button class="btn btn-p" onclick="dlPNG()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 3v13m-5-5 5 5 5-5M5 20h14"/></svg>
-        PNG
-      </button>
-      <button class="btn btn-g" onclick="dlSVG()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 3v13m-5-5 5 5 5-5M5 20h14"/></svg>
-        SVG
-      </button>
-      <button class="btn btn-g" id="btn-copy" onclick="copyStr()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        Copy
-      </button>
-      <button class="btn btn-ok" onclick="saveToHistory()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
-        Save
-      </button>
+      <button class="btn btn-p" onclick="dlPNG()"><i class="fa-solid fa-image"></i>PNG</button>
+      <button class="btn" onclick="dlSVG()"><i class="fa-solid fa-bezier-curve"></i>SVG</button>
+      <button class="btn" id="btn-copy" onclick="copyStr(this)"><i class="fa-regular fa-copy"></i><span>Copy</span></button>
+      <button class="btn btn-ok" id="btn-save" onclick="saveToHistory(this)"><i class="fa-solid fa-floppy-disk"></i><span>Save</span></button>
     </div>
-    <div class="print-row">
-      <span class="print-lbl">Print size</span>
-      <div class="pct-wrap">
-        <button class="pct-btn" onclick="chPct(-5)" title="Decrease size">−</button>
-        <input type="number" id="print-pct" value="100" min="40" max="200" step="5">
-        <span class="pct-sym">%</span>
-        <button class="pct-btn" onclick="chPct(5)" title="Increase size">+</button>
+    <div class="print-bar">
+      <div class="pb-item"><i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+        <div class="stepper">
+          <button type="button" onclick="chPct(-5)" aria-label="Decrease size"><i class="fa-solid fa-minus"></i></button>
+          <input type="number" id="print-pct" value="100" min="40" max="200" step="5" inputmode="numeric" aria-label="Print size percent" onchange="chPct(0)"><span class="unit">%</span>
+          <button type="button" onclick="chPct(5)" aria-label="Increase size"><i class="fa-solid fa-plus"></i></button>
+        </div>
       </div>
-      <span class="print-lbl" style="margin-left:6px">Per page</span>
-      <div class="pct-wrap">
-        <select id="print-qty" style="background:none;border:none;color:var(--t1);font-size:13px;font-family:inherit;cursor:pointer;outline:none;padding:6px 10px;-webkit-appearance:none;appearance:none;text-align:center;width:44px">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="4" selected>4</option>
-          <option value="6">6</option>
-        </select>
+      <div class="pb-item"><i class="fa-solid fa-table-cells-large"></i>
+        <div class="stepper"><div class="sel" style="position:relative">
+          <select id="print-qty" aria-label="Copies per page"><option value="1">1</option><option value="2">2</option><option value="4" selected>4</option><option value="6">6</option></select>
+        </div></div>
       </div>
-      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2);cursor:pointer;user-select:none">
-        <input type="checkbox" id="print-stand"> Stand tab
-      </label>
-      <button class="btn btn-g" onclick="printQR()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Print
-      </button>
+      <label class="chk"><input type="checkbox" id="print-stand"><span class="box"><i class="fa-solid fa-check"></i></span>Stand tab</label>
+      <button class="btn" onclick="printQR()"><i class="fa-solid fa-print"></i>Print</button>
     </div>
-  </main>
-</div>
+  </section>
+</main>
 
 <!-- ═══ HISTORY VIEW ═══ -->
-<div id="view-hist" class="view">
+<section id="view-hist" class="view">
   <div class="hist-top">
-    <div><h2>Saved QR Codes <span class="hist-count" id="hist-count"></span></h2></div>
-    <button class="btn btn-danger" onclick="clearHistory()" id="btn-clear-all" style="display:none">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-      Clear all
-    </button>
+    <h2>Saved QR Codes <small id="hist-count"></small></h2>
+    <button class="btn btn-danger" onclick="clearHistory()" id="btn-clear-all" style="display:none"><i class="fa-solid fa-trash-can"></i>Clear all</button>
   </div>
   <div class="hist-grid" id="hist-grid"></div>
-</div>
+</section>
 
-<!-- PRINT AREA (hidden on screen, shown when printing) -->
 <div id="print-area" aria-hidden="true"></div>
 
 <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
 <script>
+const $ = id => document.getElementById(id);
+
 // ── STATE ──
-const S = {
+const DEFAULTS = {
   ssid:'', pw:'', sec:'WPA', hidden:false,
   sz:280, dot:'rounded', corner:'extra-rounded',
   dc:'#000000', bc:'#ffffff', cc:'#000000', cdc:'#000000', ecc:'M',
-  lbls:true, pos:'both',
-  mt:'', st:'Scan to connect',
+  lbls:true, pos:'both', st:'Scan to connect',
   msz:16, ssz:12, mc:'#000000', sc:'#000000',
   ff:'sys', bold:true
 };
-let _editId = null; // tracks which history entry is currently loaded
+const S = { ...DEFAULTS };
+let _editId = null; // history entry currently loaded
 
 const FF = {
   sys:"'Roboto',sans-serif",
@@ -522,114 +587,84 @@ const FF = {
   serif:'Georgia,Cambria,"Times New Roman",serif'
 };
 
-// ── GUIDE STEPS ──
+// ── GUIDE ──
 const GUIDE = [
-  {
-    tag:'Welcome',
-    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><circle cx="17.5" cy="17.5" r="1.5" fill="currentColor" stroke="none"/><path d="M14 14h3v3"/></svg>`,
-    title:'WiFi QR Generator',
-    body:`<p>Generate a scannable QR code for your WiFi network — guests point their camera at it and connect instantly, no password typing required.</p>
-<p>This guide walks you through the <strong>4 sections</strong> of the tool. It takes about one minute to read and will not show again after you finish.</p>
-<div class="tip">💡 The live preview on the right updates as you change any setting.</div>`
-  },
-  {
-    tag:'① Network',
-    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1.5" fill="currentColor" stroke="none"/></svg>`,
-    title:'Network Settings',
-    body:`<p>Enter your WiFi details exactly as configured in your router.</p>
-<ul>
-  <li><strong>Network name (SSID)</strong> — the name that appears in the WiFi list on devices</li>
-  <li><strong>Password</strong> — your current WiFi password</li>
-  <li><strong>Security type</strong> — use <strong>WPA2/WPA3</strong> for any modern router (2010 onwards)</li>
-  <li><strong>Hidden network</strong> — only enable this if your SSID does not appear in device WiFi lists</li>
-</ul>
-<div class="tip">⚠️ Your credentials never leave your browser — everything runs locally.</div>`
-  },
-  {
-    tag:'② Design',
-    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="13.5" cy="6.5" r="1" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1" fill="currentColor"/><circle cx="8.5" cy="7.5" r="1" fill="currentColor"/><circle cx="6.5" cy="12.5" r="1" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13A1.64 1.64 0 0 1 14.43 16h2c3.05 0 5.56-2.5 5.56-5.55C21.96 6.01 17.46 2 12 2z"/></svg>`,
-    title:'QR Design',
-    body:`<p>Customise the visual appearance of your QR code — it will still scan correctly regardless of style.</p>
-<ul>
-  <li><strong>Dot style</strong> — shape of the small square modules that make up the QR code</li>
-  <li><strong>Corner style</strong> — the three large position markers in the corners</li>
-  <li><strong>Colours</strong> — independently control dots, background, corners, and corner dots</li>
-  <li><strong>Error correction</strong> — higher levels let the QR still scan even if partially covered or printed with a logo overlay</li>
-</ul>
-<div class="tip">💡 Always keep strong contrast between dots and background for reliable scanning.</div>`
-  },
-  {
-    tag:'③ Labels',
-    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 6.1H3"/><path d="M21 12.1H3"/><path d="M15.1 18H3"/></svg>`,
-    title:'Text Labels',
-    body:`<p>Add descriptive text to display alongside the QR code. Labels are baked into the PNG download.</p>
-<ul>
-  <li><strong>Above</strong> — network name printed above the QR</li>
-  <li><strong>Below</strong> — network name + subtitle printed below</li>
-  <li><strong>Both</strong> — network name above, subtitle below</li>
-</ul>
-<p>Leave the main text field blank to auto-use the network name. Adjust font, size, and colour independently for the main text and subtitle.</p>`
-  },
-  {
-    tag:'④ Download & History',
-    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>`,
-    title:'Download & History',
-    body:`<p>Once your QR looks right, save it using one of the three options:</p>
-<ul>
-  <li><strong>PNG</strong> — full image including your text labels, ready to print or share</li>
-  <li><strong>SVG</strong> — scalable vector, QR code only (no labels) — ideal for print at any size</li>
-  <li><strong>Copy</strong> — copies the raw WiFi connection string to clipboard</li>
-</ul>
-<p>Hit <strong>Save</strong> to store the QR in the <strong>History</strong> tab. Your saved codes persist between visits — click any saved entry to reload its settings.</p>`
-  }
+  { tag:'Welcome', icon:'fa-wifi', title:'WiFi QR Generator',
+    body:`<p>Make a scannable QR code for your WiFi — guests point their camera at it and connect instantly. No password typing.</p>
+<p>This quick tour covers the <strong>4 parts</strong> of the tool and only shows once.</p>
+<div class="tip"><i class="fa-solid fa-bolt"></i>The live preview updates as you change any setting.</div>` },
+  { tag:'01 · Network', icon:'fa-tower-broadcast', title:'Network settings',
+    body:`<ul>
+<li><strong>Network name (SSID)</strong> — the name shown in the WiFi list</li>
+<li><strong>Password</strong> — your current WiFi password</li>
+<li><strong>Security</strong> — pick <strong>WPA2/WPA3</strong> for any modern router</li>
+<li><strong>Hidden network</strong> — only if your SSID isn't broadcast</li></ul>
+<div class="tip"><i class="fa-solid fa-lock"></i>Everything runs in your browser — your details are never uploaded.</div>` },
+  { tag:'02 · Design', icon:'fa-palette', title:'Make it yours',
+    body:`<ul>
+<li><strong>Dot style</strong> — shape of the small QR modules</li>
+<li><strong>Corner style</strong> — the three big position markers</li>
+<li><strong>Colours</strong> — dots (corners follow) and background</li>
+<li><strong>Error correction</strong> — higher still scans when partly covered</li></ul>
+<div class="tip"><i class="fa-solid fa-circle-half-stroke"></i>Keep strong contrast between dots and background.</div>` },
+  { tag:'03 · Labels', icon:'fa-font', title:'Text labels',
+    body:`<p>Add text around the code. Labels are baked into PNG downloads and prints.</p>
+<ul><li><strong>Below</strong> — network name and subtitle under the QR</li>
+<li><strong>Both</strong> — network name above, subtitle below</li></ul>
+<p>Pick a font, colours and weight to match your space.</p>` },
+  { tag:'04 · Export', icon:'fa-floppy-disk', title:'Download, print & save',
+    body:`<ul>
+<li><strong>PNG</strong> — full image with labels</li>
+<li><strong>SVG</strong> — scalable vector, QR only</li>
+<li><strong>Copy</strong> — the raw WiFi connection string</li>
+<li><strong>Print</strong> — several per page, with optional fold-out stand</li></ul>
+<p><strong>Save</strong> keeps it in <strong>History</strong> on this device — click any entry to load it again.</p>` }
 ];
-
 let guideStep = 0;
 
-function renderGuideStep(n) {
-  const step = GUIDE[n];
-  const total = GUIDE.length;
-  const pct = ((n + 1) / total) * 100;
-  document.getElementById('guide-bar').style.width = pct + '%';
-  document.getElementById('guide-step-lbl').textContent = `Step ${n + 1} of ${total}`;
-  document.getElementById('guide-next-txt').textContent = n < total - 1 ? 'Next' : 'Start Generating';
-  const inner = document.getElementById('guide-inner');
-  inner.innerHTML = `
-    <div class="guide-icon-wrap">${step.icon}</div>
-    <div class="guide-tag">${step.tag}</div>
-    <div class="guide-title">${step.title}</div>
-    <div class="guide-body">${step.body}</div>`;
-  // Re-trigger animation
-  inner.style.animation = 'none';
-  inner.offsetHeight; // reflow
-  inner.style.animation = '';
+function renderGuideStep() {
+  const s = GUIDE[guideStep], last = guideStep === GUIDE.length - 1;
+  $('guide-inner').innerHTML = `<div class="g-ico"><i class="fa-solid ${s.icon}"></i></div>
+    <div class="g-tag">${s.tag}</div><div class="g-title" id="g-title">${s.title}</div><div class="g-body">${s.body}</div>`;
+  const inner = $('guide-inner'); inner.style.animation = 'none'; inner.offsetHeight; inner.style.animation = '';
+  $('guide-dots').innerHTML = GUIDE.map((_, i) => `<span class="${i === guideStep ? 'on' : ''}"></span>`).join('');
+  $('guide-next-txt').textContent = last ? "Let's go" : 'Next';
+  $('guide-back').style.visibility = guideStep ? 'visible' : 'hidden';
 }
-
-function nextStep() {
-  if (guideStep < GUIDE.length - 1) {
-    guideStep++;
-    renderGuideStep(guideStep);
-  } else {
-    // Final step — dismiss and mark visited
-    document.getElementById('guide').classList.add('hidden');
-    try { localStorage.setItem('wifiqr-visited', '1'); } catch(e) {}
-  }
+function stepGuide(d) {
+  if (d > 0 && guideStep === GUIDE.length - 1) return closeGuide();
+  guideStep = Math.max(0, guideStep + d); renderGuideStep();
 }
+function openGuide() { guideStep = 0; renderGuideStep(); $('guide').classList.remove('hidden'); $('guide-next').focus(); }
+function closeGuide() {
+  $('guide').classList.add('hidden');
+  try { localStorage.setItem('wifiqr-visited', '1'); } catch (e) {}
+}
+document.addEventListener('keydown', e => {
+  if ($('guide').classList.contains('hidden')) return;
+  if (e.key === 'Escape') closeGuide();
+  if (e.key === 'ArrowRight') stepGuide(1);
+  if (e.key === 'ArrowLeft') stepGuide(-1);
+});
 
 // ── DEBOUNCE ──
 let _dt;
-function debouncedUpdate() { clearTimeout(_dt); _dt = setTimeout(update, 280); }
+function debouncedUpdate() { clearTimeout(_dt); _dt = setTimeout(update, 220); }
 
 // ── VIEW SWITCHER ──
 function showView(v) {
   document.querySelectorAll('.view').forEach(el => el.classList.remove('on'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
-  document.getElementById('view-' + v).classList.add('on');
-  document.querySelectorAll('.tab-btn')[v === 'gen' ? 0 : 1].classList.add('on');
+  $('view-' + v).classList.add('on');
+  $('tabs').dataset.v = v;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    const on = b.dataset.view === v;
+    b.classList.toggle('on', on); b.setAttribute('aria-selected', on);
+  });
   if (v === 'hist') renderHistory();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── BUILD PICKERS ──
+// ── PICKERS ──
 const DOTS = [
   {id:'square',        lbl:'Square',  svg:'<rect x="2" y="2" width="8" height="8"/><rect x="13" y="2" width="8" height="8"/><rect x="24" y="2" width="8" height="8"/><rect x="2" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/><rect x="24" y="13" width="8" height="8"/><rect x="2" y="24" width="8" height="8"/><rect x="13" y="24" width="8" height="8"/><rect x="24" y="24" width="8" height="8"/>'},
   {id:'dots',          lbl:'Dots',    svg:'<circle cx="6" cy="6" r="4"/><circle cx="17" cy="6" r="4"/><circle cx="28" cy="6" r="4"/><circle cx="6" cy="17" r="4"/><circle cx="17" cy="17" r="4"/><circle cx="28" cy="17" r="4"/><circle cx="6" cy="28" r="4"/><circle cx="17" cy="28" r="4"/><circle cx="28" cy="28" r="4"/>'},
@@ -639,546 +674,436 @@ const DOTS = [
   {id:'extra-rounded', lbl:'Pill',    svg:'<rect x="2" y="2" width="8" height="8" rx="4.5"/><rect x="13" y="2" width="8" height="8" rx="4.5"/><rect x="24" y="2" width="8" height="8" rx="4.5"/><rect x="2" y="13" width="8" height="8" rx="4.5"/><rect x="13" y="13" width="8" height="8" rx="4.5"/><rect x="24" y="13" width="8" height="8" rx="4.5"/><rect x="2" y="24" width="8" height="8" rx="4.5"/><rect x="13" y="24" width="8" height="8" rx="4.5"/><rect x="24" y="24" width="8" height="8" rx="4.5"/>'},
 ];
 const CORNERS = [
-  {id:'square',        lbl:'Square',  sq:'square',        svg:'<rect x="3" y="3" width="24" height="24" rx="0" fill="none" stroke="currentColor" stroke-width="4"/><rect x="11" y="11" width="8" height="8"/>'},
-  {id:'extra-rounded', lbl:'Rounded', sq:'extra-rounded', svg:'<rect x="3" y="3" width="24" height="24" rx="9" fill="none" stroke="currentColor" stroke-width="4"/><rect x="11" y="11" width="8" height="8" rx="2.5"/>'},
-  {id:'dot',           lbl:'Circle',  sq:'dot',           svg:'<rect x="3" y="3" width="24" height="24" rx="0" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="15" cy="15" r="4"/>'},
+  {id:'square',        lbl:'Square',  svg:'<rect x="3" y="3" width="24" height="24" fill="none" stroke="currentColor" stroke-width="4"/><rect x="11" y="11" width="8" height="8"/>'},
+  {id:'extra-rounded', lbl:'Rounded', svg:'<rect x="3" y="3" width="24" height="24" rx="9" fill="none" stroke="currentColor" stroke-width="4"/><rect x="11" y="11" width="8" height="8" rx="2.5"/>'},
+  {id:'dot',           lbl:'Circle',  svg:'<circle cx="15" cy="15" r="12" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="15" cy="15" r="4"/>'},
 ];
 
-function buildPickers() {
-  const dg = document.getElementById('dot-grid');
-  DOTS.forEach(d => {
+function buildPicker(gridId, items, key, vb) {
+  const g = $(gridId);
+  items.forEach(d => {
     const b = document.createElement('button');
-    b.className = 's-btn' + (d.id === S.dot ? ' on' : '');
-    b.innerHTML = `<svg width="34" height="34" viewBox="0 0 34 34" fill="currentColor">${d.svg}</svg>${d.lbl}`;
-    b.onclick = () => { S.dot = d.id; dg.querySelectorAll('.s-btn').forEach(x => x.classList.remove('on')); b.classList.add('on'); update(); };
-    dg.appendChild(b);
+    b.type = 'button'; b.className = 's-btn'; b.dataset.val = d.id;
+    b.innerHTML = `<svg width="34" height="34" viewBox="${vb}" fill="currentColor">${d.svg}</svg>${d.lbl}`;
+    b.onclick = () => { S[key] = d.id; syncPicker(gridId, d.id); update(); };
+    g.appendChild(b);
   });
-  const cg = document.getElementById('corner-grid');
-  CORNERS.forEach(c => {
-    const b = document.createElement('button');
-    b.className = 's-btn' + (c.id === S.corner ? ' on' : '');
-    b.innerHTML = `<svg width="34" height="34" viewBox="0 0 30 30" fill="currentColor">${c.svg}</svg>${c.lbl}`;
-    b.onclick = () => { S.corner = c.id; cg.querySelectorAll('.s-btn').forEach(x => x.classList.remove('on')); b.classList.add('on'); update(); };
-    cg.appendChild(b);
-  });
+  syncPicker(gridId, S[key]);
 }
+function syncPicker(gridId, val) { $(gridId).querySelectorAll('.s-btn').forEach(b => b.classList.toggle('on', b.dataset.val === val)); }
 
 // ── QR ──
-let qr;
-function mkQR() {
-  const cont = document.getElementById('qr-cont');
-  cont.innerHTML = '';
-  const cSq = CORNERS.find(c => c.id === S.corner)?.sq || 'square';
-  qr = new QRCodeStyling({
-    width: S.sz, height: S.sz, type: 'canvas',
-    data: wifiStr() || 'WIFI:T:WPA;S:Preview;;',
-    margin: 0,
-    qrOptions: { errorCorrectionLevel: S.ecc },
-    dotsOptions: { color: S.dc, type: S.dot },
-    backgroundOptions: { color: S.bc },
-    cornersSquareOptions: { color: S.cc, type: cSq },
-    cornersDotOptions: { color: S.cdc, type: 'dot' }
-  });
-  qr.append(cont);
-  document.querySelector('.pv-card').style.background = S.bc;
+let qr = null, lastData = null;
+function qrOptions(size, data) {
+  return {
+    width:size, height:size, type:'canvas', data, margin:0,
+    qrOptions:{ errorCorrectionLevel:S.ecc },
+    dotsOptions:{ color:S.dc, type:S.dot },
+    backgroundOptions:{ color:S.bc },
+    cornersSquareOptions:{ color:S.cc, type:S.corner },
+    cornersDotOptions:{ color:S.cdc, type:'dot' }
+  };
+}
+function render() {
+  if (typeof QRCodeStyling === 'undefined') {
+    $('qr-cont').innerHTML = '<div style="width:240px;height:240px;display:grid;place-items:center;color:#c33;font:600 13px sans-serif;text-align:center;line-height:1.4">QR library failed to load.<br>Check your internet connection.</div>';
+    return;
+  }
+  const data = wifiStr() || 'WIFI:T:WPA;S:Preview;;';
+  const o = qrOptions(S.sz, data);
+  if (!qr) { qr = new QRCodeStyling(o); qr.append($('qr-cont')); }
+  else qr.update(o);
+  $('pv-card').style.background = S.bc;
+  $('pv-card').classList.toggle('empty', !S.ssid.trim());
+  if (lastData !== null && data !== lastData) {
+    const w = $('qr-wrap'); w.classList.remove('pop'); w.offsetWidth; w.classList.add('pop');
+  }
+  lastData = data;
 }
 
 function wifiStr() {
   const e = v => v.replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/"/g,'\\"').replace(/:/g,'\\:');
   if (!S.ssid.trim()) return '';
-  if (S.sec === 'nopass') return `WIFI:T:nopass;S:${e(S.ssid)};;`;
-  return `WIFI:T:${S.sec};S:${e(S.ssid)};P:${e(S.pw)};H:${S.hidden};;`;
+  const h = S.hidden ? 'H:true;' : '';
+  if (S.sec === 'nopass') return `WIFI:T:nopass;S:${e(S.ssid)};${h};`;
+  return `WIFI:T:${S.sec};S:${e(S.ssid)};P:${e(S.pw)};${h};`;
 }
 
 function update() {
-  S.ssid = document.getElementById('f-ssid').value;
-  S.pw   = document.getElementById('f-pw').value;
-  S.sec  = document.getElementById('f-sec').value;
-  S.ecc  = document.getElementById('f-ecc').value;
-  mkQR();
+  S.ssid = $('f-ssid').value;
+  S.pw   = $('f-pw').value;
+  S.sec  = $('f-sec').value;
+  S.ecc  = $('f-ecc').value;
+  $('pw-field').style.opacity = S.sec === 'nopass' ? .4 : 1;
+  $('f-pw').disabled = S.sec === 'nopass';
+  render();
   updLbls();
 }
 
-function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 function wifiLbl(text, color, fontSize) {
-  const fsz = fontSize || S.msz;
-  const sz  = Math.round(fsz * 2.0);
-  const gap = Math.round(fsz * 0.45);
+  const fsz = fontSize || S.msz, sz = Math.round(fsz * 2), gap = Math.round(fsz * .45);
   return `<span style="display:flex;align-items:center;justify-content:center;gap:${gap}px">` +
-    `<svg width="${sz}" height="${sz}" viewBox="0 3 24 21" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))">` +
-    `<path d="M5 12.55a11 11 0 0 1 14.08 0"/>` +
-    `<path d="M1.42 9a16 16 0 0 1 21.16 0"/>` +
-    `<path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>` +
-    `<circle cx="12" cy="20" r="2" fill="${color}" stroke="none"/></svg>` +
-    `<span>${escH(text)}</span></span>`;
+    `<svg width="${sz}" height="${sz}" viewBox="0 3 24 21" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">` +
+    `<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>` +
+    `<circle cx="12" cy="20" r="2" fill="${color}" stroke="none"/></svg><span>${escH(text)}</span></span>`;
 }
 
 function updLbls() {
-  S.st = document.getElementById('f-st').value;
-  const card = document.querySelector('.pv-card');
-  if (card) card.style.background = S.bc;
-  const main = S.ssid || '';
-  const fw   = S.bold ? '700' : '400';
-  const mSt  = `font-size:${S.msz}px;font-weight:${fw};color:${S.mc};font-family:${FF[S.ff]};`;
-  const sSt  = `font-size:${S.ssz}px;font-weight:400;color:${S.sc};font-family:${FF[S.ff]};`;
-  const la = document.getElementById('la');
-  const lb = document.getElementById('lb');
-  const ls = document.getElementById('ls');
-  la.innerHTML = lb.innerHTML = ls.innerHTML = '';
-  la.style.cssText = 'display:none'; lb.style.cssText = 'display:none'; ls.style.cssText = 'display:none';
+  S.st = $('f-st').value;
+  const main = S.ssid || 'Network name';
+  const mSt = `font-size:${S.msz}px;font-weight:${S.bold ? 700 : 400};color:${S.mc};font-family:${FF[S.ff]};`;
+  const sSt = `font-size:${S.ssz}px;font-weight:400;color:${S.sc};font-family:${FF[S.ff]};`;
+  const la = $('la'), lb = $('lb'), ls = $('ls');
+  [la, lb, ls].forEach(el => { el.innerHTML = ''; el.style.cssText = 'display:none'; });
   if (!S.lbls) return;
-  if (S.pos === 'above') {
-    la.innerHTML = wifiLbl(main, S.mc); la.style.cssText = mSt;
-    ls.textContent = S.st; ls.style.cssText = sSt;
-  } else if (S.pos === 'below') {
-    lb.innerHTML = wifiLbl(main, S.mc); lb.style.cssText = mSt;
-    ls.textContent = S.st; ls.style.cssText = sSt;
-  } else if (S.pos === 'both') {
-    la.innerHTML = wifiLbl(main, S.mc); la.style.cssText = mSt;
-    ls.textContent = S.st; ls.style.cssText = sSt;
-  }
+  const target = S.pos === 'below' ? lb : la;
+  target.innerHTML = wifiLbl(main, S.mc); target.style.cssText = mSt;
+  if (S.st) { ls.textContent = S.st; ls.style.cssText = sSt; }
 }
 
 // ── TOGGLES ──
-function togglePw() { const el = document.getElementById('f-pw'); el.type = el.type === 'password' ? 'text' : 'password'; }
+function setSwitch(id, on) { $(id).setAttribute('aria-checked', on); }
+function togglePw() {
+  const el = $('f-pw'), show = el.type === 'password';
+  el.type = show ? 'text' : 'password';
+  $('pw-ico').className = 'fa-solid ' + (show ? 'fa-eye-slash' : 'fa-eye');
+}
 function toggle(key) {
-  if (key === 'hidden') { S.hidden = !S.hidden; document.getElementById('sw-hidden').classList.toggle('on', S.hidden); update(); }
-  if (key === 'labels') { S.lbls = !S.lbls; document.getElementById('sw-labels').classList.toggle('on', S.lbls); document.getElementById('lbl-fields').classList.toggle('off', !S.lbls); updLbls(); }
-  if (key === 'bold')   { S.bold = !S.bold;   document.getElementById('sw-bold').classList.toggle('on', S.bold);   updLbls(); }
+  if (key === 'hidden') { S.hidden = !S.hidden; setSwitch('sw-hidden', S.hidden); update(); }
+  if (key === 'labels') { S.lbls = !S.lbls; setSwitch('sw-labels', S.lbls); $('lbl-fields').classList.toggle('off', !S.lbls); updLbls(); }
+  if (key === 'bold')   { S.bold = !S.bold; setSwitch('sw-bold', S.bold); updLbls(); }
 }
 function setPos(pos) { S.pos = pos; document.querySelectorAll('[data-pos]').forEach(b => b.classList.toggle('on', b.dataset.pos === pos)); updLbls(); }
 function setFont(ff) { S.ff = ff; document.querySelectorAll('[data-ff]').forEach(b => b.classList.toggle('on', b.dataset.ff === ff)); updLbls(); }
 
 // ── COLOURS ──
+function paintSwatch(sw, hx, v) { $(sw).style.background = v; $(hx).textContent = v; }
+let _cr;
 function onClr(t, v) {
-  const map = { dots:['sw-dots','hx-dots','dc'], bg:['sw-bg','hx-bg','bc'] };
-  const [sw, hx, sk] = map[t]; S[sk] = v;
-  document.getElementById(sw).style.background = v;
-  document.getElementById(hx).textContent = v;
-  // corners and corner-dots always follow the dots color
-  if (t === 'dots') { S.cc = v; S.cdc = v; }
-  update();
+  if (t === 'dots') { S.dc = S.cc = S.cdc = v; paintSwatch('sw-dots','hx-dots',v); } // corners follow dots
+  else { S.bc = v; paintSwatch('sw-bg','hx-bg',v); }
+  cancelAnimationFrame(_cr); _cr = requestAnimationFrame(render); // colour drags fire fast
 }
 function onLClr(t, v) {
-  if (t === 'm') { S.mc = v; document.getElementById('sw-mc').style.background = v; document.getElementById('hx-mc').textContent = v; }
-  if (t === 's') { S.sc = v; document.getElementById('sw-sc').style.background = v; document.getElementById('hx-sc').textContent = v; }
+  if (t === 'm') { S.mc = v; paintSwatch('sw-mc','hx-mc',v); }
+  else { S.sc = v; paintSwatch('sw-sc','hx-sc',v); }
   updLbls();
 }
 
 // ── THUMBNAIL ──
-function getThumb() {
-  const canvas = document.querySelector('#qr-cont canvas');
-  if (!canvas) return '';
-  const tc = document.createElement('canvas');
-  tc.width = tc.height = 100;
-  tc.getContext('2d').drawImage(canvas, 0, 0, 100, 100);
-  return tc.toDataURL('image/png', 0.7);
+// built from getRawData: the live canvas may still be mid-draw right after a change
+async function getThumb() {
+  try {
+    const url = URL.createObjectURL(await qr.getRawData('png'));
+    const img = await loadImage(url);
+    URL.revokeObjectURL(url);
+    const tc = document.createElement('canvas');
+    tc.width = tc.height = 120;
+    tc.getContext('2d').drawImage(img, 0, 0, 120, 120);
+    return tc.toDataURL('image/png');
+  } catch { return ''; }
 }
 
 // ── DOWNLOAD PNG ──
-function drawWifiIcon(cx, cx_, cy, sz, color) {
-  // cx_, cy = horizontal center and baseline; sz = font size
+function drawWifiIcon(cx, x, y, sz, color) {
   cx.save();
   cx.strokeStyle = color; cx.fillStyle = color; cx.lineCap = 'round';
-  const r = [0.22, 0.40, 0.58].map(f => f * sz);
-  const dot = sz * 0.09;
-  const originY = cy; // dot sits at baseline
-  cx.beginPath(); cx.arc(cx_, originY - dot, dot, 0, Math.PI*2); cx.fill();
-  r.forEach(rad => {
-    cx.lineWidth = Math.max(1, sz * 0.08);
-    cx.beginPath();
-    cx.arc(cx_, originY - dot, rad, Math.PI*1.75, Math.PI*1.25, true);
-    cx.stroke();
+  const dot = sz * .09;
+  cx.beginPath(); cx.arc(x, y - dot, dot, 0, Math.PI * 2); cx.fill();
+  [.22, .40, .58].forEach(f => {
+    cx.lineWidth = Math.max(1, sz * .08);
+    cx.beginPath(); cx.arc(x, y - dot, f * sz, Math.PI * 1.75, Math.PI * 1.25, true); cx.stroke();
   });
   cx.restore();
 }
-
 function drawIconText(cx, text, y, fontSize, fontWeight, color, canvasW, font) {
   cx.font = `${fontWeight} ${fontSize}px ${font}`;
-  const tw   = cx.measureText(text).width;
-  const isz  = fontSize;
-  const gap  = fontSize * 0.28;
-  const totW = isz + gap + tw;
+  const tw = cx.measureText(text).width, gap = fontSize * .28, totW = fontSize + gap + tw;
   const startX = canvasW / 2 - totW / 2;
-  drawWifiIcon(cx, startX + isz / 2, y, isz, color);
-  cx.fillStyle = color;
-  cx.textAlign = 'left';
-  cx.fillText(text, startX + isz + gap, y);
-  cx.textAlign = 'center'; // reset
+  drawWifiIcon(cx, startX + fontSize / 2, y, fontSize, color);
+  cx.fillStyle = color; cx.textAlign = 'left';
+  cx.fillText(text, startX + fontSize + gap, y);
+  cx.textAlign = 'center';
 }
+const fileName = () => (S.ssid.trim() || 'wifi').replace(/[\\/:*?"<>|]+/g, '_') + '-qr';
+function needSsid() { if (!S.ssid.trim()) { showToast('Enter a network name first', 'warn'); $('f-ssid').focus(); return true; } return false; }
 
 async function dlPNG() {
-  if (!qr) return;
-  if (!S.ssid.trim()) { showToast('Enter a network name first', 'warn'); return; }
+  if (!qr || needSsid()) return;
   try {
     const qrBlob = await qr.getRawData('png');
-    const qrURL  = URL.createObjectURL(qrBlob);
-    const img    = await loadImage(qrURL);
+    const qrURL = URL.createObjectURL(qrBlob);
+    const img = await loadImage(qrURL);
     URL.revokeObjectURL(qrURL);
-    const pad = 28, fw = S.bold ? '700' : '400';
-    const main = S.mt || S.ssid || '';
+    const pad = 28, fw = S.bold ? '700' : '400', main = S.ssid;
     let tTop = '', tBot = '', tSub = '';
     if (S.lbls) {
-      if (S.pos === 'above') { tTop = main; tSub = S.st; }
-      else if (S.pos === 'below') { tBot = main; tSub = S.st; }
-      else if (S.pos === 'both') { tTop = main; tSub = S.st; }
+      if (S.pos === 'below') tBot = main; else tTop = main;
+      tSub = S.st;
     }
     const topH = tTop ? S.msz + 16 : 0;
     let botH = tBot ? S.msz + 10 : 0;
     if (tSub) botH += S.ssz + 8;
+    // wide labels must not be clipped
+    const m = document.createElement('canvas').getContext('2d');
+    m.font = `${fw} ${S.msz}px ${FF[S.ff]}`;
+    const need = m.measureText(main).width + S.msz * 1.6 + pad * 2;
     const cv = document.createElement('canvas');
-    cv.width = img.width + pad * 2;
+    cv.width = Math.ceil(Math.max(img.width + pad * 2, tTop || tBot ? need : 0));
     cv.height = img.height + pad * 2 + topH + botH;
     const cx = cv.getContext('2d');
     cx.fillStyle = S.bc; cx.fillRect(0, 0, cv.width, cv.height);
     if (tTop) drawIconText(cx, tTop, pad + S.msz * .85, S.msz, fw, S.mc, cv.width, FF[S.ff]);
-    cx.drawImage(img, pad, pad + topH);
+    cx.drawImage(img, (cv.width - img.width) / 2, pad + topH);
     let by = pad + topH + img.height + 10;
     if (tBot) { drawIconText(cx, tBot, by + S.msz * .85, S.msz, fw, S.mc, cv.width, FF[S.ff]); by += S.msz + 8; }
-    if (tSub) { cx.font=`${S.ssz}px ${FF[S.ff]}`; cx.fillStyle=S.sc; cx.textAlign='center'; cx.fillText(tSub, cv.width/2, by+S.ssz*.85); }
+    if (tSub) { cx.font = `${S.ssz}px ${FF[S.ff]}`; cx.fillStyle = S.sc; cx.textAlign = 'center'; cx.fillText(tSub, cv.width / 2, by + S.ssz * .85); }
     cv.toBlob(blob => {
-      const dlURL = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = dlURL; a.download = (S.ssid || 'wifi') + '-qr.png';
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(dlURL), 1000);
+      const url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = fileName() + '.png'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      showToast('PNG downloaded', 'ok');
     }, 'image/png');
-  } catch(e) { showToast('Download failed — try again', 'err'); }
+  } catch (e) { console.error(e); showToast('Download failed — try again', 'err'); }
 }
-function loadImage(src) { return new Promise((res,rej) => { const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src; }); }
+function loadImage(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
 
 // ── DOWNLOAD SVG ──
 function dlSVG() {
-  if (!qr) return;
-  if (!S.ssid.trim()) { showToast('Enter a network name first', 'warn'); return; }
-  qr.download({ name: (S.ssid||'wifi')+'-qr', extension:'svg' });
+  if (!qr || needSsid()) return;
+  qr.download({ name:fileName(), extension:'svg' });
+  showToast('SVG downloaded', 'ok');
 }
 
 // ── COPY ──
-function copyStr() {
-  const str = wifiStr();
-  if (!str) { showToast('Enter a network name first', 'warn'); return; }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(str).then(() => showToast('WiFi string copied', 'ok')).catch(() => copyFallback(str));
-  } else { copyFallback(str); }
+function flash(btn, icon, text) {
+  const i = btn.querySelector('i'), s = btn.querySelector('span'), oi = i.className, os = s.textContent;
+  i.className = 'fa-solid ' + icon; s.textContent = text; btn.classList.add('done');
+  setTimeout(() => { i.className = oi; s.textContent = os; btn.classList.remove('done'); }, 1600);
 }
-function copyFallback(str) {
+function copyStr(btn) {
+  const str = wifiStr();
+  if (!str) return needSsid();
+  const ok = () => { showToast('WiFi string copied', 'ok'); flash(btn, 'fa-check', 'Copied'); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(str).then(ok).catch(() => copyFallback(str, ok));
+  else copyFallback(str, ok);
+}
+function copyFallback(str, ok) {
   const ta = document.createElement('textarea');
-  ta.value = str; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+  ta.value = str; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;font-size:16px';
   document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); showToast('Copied', 'ok'); }
-  catch { showToast('Copy unavailable on HTTP — use the Download instead', 'warn'); }
-  document.body.removeChild(ta);
+  try { document.execCommand('copy') ? ok() : showToast('Copy not available here', 'warn'); }
+  catch { showToast('Copy not available here', 'warn'); }
+  ta.remove();
 }
 
 // ── HISTORY ──
 const HIST_KEY = 'wifiqr-history';
-function getHistory() { try { return JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); } catch { return []; } }
-function saveHistory(arr) { try { localStorage.setItem(HIST_KEY, JSON.stringify(arr)); } catch { showToast('Storage full — delete some entries', 'warn'); } }
+function getHistory() { try { const h = JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); return Array.isArray(h) ? h : []; } catch { return []; } }
+function saveHistory(arr) {
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(arr)); updCount(arr.length); return true; }
+  catch { showToast('Storage full — delete some entries', 'warn'); return false; }
+}
+function updCount(n) { $('tab-count').textContent = n; }
 
-function saveToHistory() {
-  if (!S.ssid.trim()) { showToast('Enter a network name first', 'warn'); return; }
-  const thumb = getThumb();
-  const hist  = getHistory();
-  if (_editId !== null) {
-    // Update the existing entry instead of duplicating
-    const idx = hist.findIndex(e => e.id === _editId);
-    if (idx !== -1) {
-      hist[idx] = { ...hist[idx], ssid:S.ssid, sec:S.sec, thumb, settings:JSON.parse(JSON.stringify(S)), savedAt:new Date().toLocaleString() };
-      saveHistory(hist);
-      showToast('Updated ✓', 'ok');
-      return;
-    }
-  }
-  // New entry
-  const entry = { id:Date.now(), ssid:S.ssid, sec:S.sec, thumb, settings:JSON.parse(JSON.stringify(S)), savedAt:new Date().toLocaleString() };
-  hist.unshift(entry);
-  if (hist.length > 30) hist.pop();
-  saveHistory(hist);
-  _editId = entry.id; // track for future updates in this session
-  showToast('Saved to history ✓', 'ok');
+async function saveToHistory(btn) {
+  if (!qr || needSsid()) return;
+  const thumb = await getThumb();
+  const hist = getHistory();
+  const data = { ssid:S.ssid, sec:S.sec, thumb, settings:{ ...S }, savedAt:new Date().toLocaleString() };
+  const idx = _editId !== null ? hist.findIndex(e => e.id === _editId) : -1;
+  if (idx !== -1) hist[idx] = { ...hist[idx], ...data };
+  else { const entry = { id:Date.now(), ...data }; hist.unshift(entry); if (hist.length > 30) hist.pop(); _editId = entry.id; }
+  if (!saveHistory(hist)) return;
+  showToast(idx !== -1 ? 'Updated in history' : 'Saved to history', 'ok');
+  flash(btn, 'fa-check', idx !== -1 ? 'Updated' : 'Saved');
 }
 
-function deleteFromHistory(id) {
+function deleteFromHistory(id, card) {
   if (!confirm('Delete this QR code from history?')) return;
   saveHistory(getHistory().filter(e => e.id !== id));
-  renderHistory();
+  if (_editId === id) _editId = null;
+  card.classList.add('out');
+  setTimeout(renderHistory, 330);
 }
 
-function loadFromHistory_byId(id) {
+function loadFromHistory(id) {
   try {
     const entry = getHistory().find(e => e.id === id);
     if (!entry) { showToast('Entry not found', 'warn'); return; }
-    Object.assign(S, entry.settings);
-    document.getElementById('f-ssid').value = S.ssid || '';
-    document.getElementById('f-pw').value   = S.pw   || '';
-    document.getElementById('f-sec').value  = S.sec  || 'WPA';
-    document.getElementById('f-ecc').value  = S.ecc  || 'M';
-    document.getElementById('f-st').value   = S.st   || 'Scan to connect';
-    [['cp-dots','sw-dots','hx-dots', S.dc||'#000000'],
-     ['cp-bg',  'sw-bg',  'hx-bg',  S.bc||'#ffffff'],
-     ['cp-mc',  'sw-mc',  'hx-mc',  S.mc||'#000000'],
-     ['cp-sc',  'sw-sc',  'hx-sc',  S.sc||'#333333']
-    ].forEach(([inp, sw, hx, v]) => {
-      const ei = document.getElementById(inp); if (ei) ei.value = v;
-      const es = document.getElementById(sw);  if (es) es.style.background = v;
-      const eh = document.getElementById(hx);  if (eh) eh.textContent = v;
-    });
-    document.getElementById('sw-hidden').classList.toggle('on', !!S.hidden);
-    document.getElementById('sw-labels').classList.toggle('on', S.lbls !== false);
-    document.getElementById('sw-bold').classList.toggle('on',   S.bold !== false);
-    document.getElementById('lbl-fields').classList.toggle('off', S.lbls === false);
-    document.querySelectorAll('#dot-grid .s-btn').forEach(b => {
-      const match = DOTS.find(d => d.id === S.dot)?.lbl;
-      b.classList.toggle('on', !!match && b.textContent.trim() === match);
-    });
-    document.querySelectorAll('#corner-grid .s-btn').forEach(b => {
-      const match = CORNERS.find(c => c.id === S.corner)?.lbl;
-      b.classList.toggle('on', !!match && b.textContent.trim() === match);
-    });
-    document.querySelectorAll('[data-pos]').forEach(b => b.classList.toggle('on', b.dataset.pos === S.pos));
-    document.querySelectorAll('[data-ff]').forEach(b  => b.classList.toggle('on', b.dataset.ff  === S.ff));
-    update();
-    updLbls(); // second pass — ensures labels render after QR canvas settles
+    Object.assign(S, DEFAULTS, entry.settings);
+    $('f-ssid').value = S.ssid; $('f-pw').value = S.pw;
+    $('f-sec').value = S.sec;   $('f-ecc').value = S.ecc;
+    $('f-st').value = S.st;
+    [['cp-dots','sw-dots','hx-dots',S.dc],['cp-bg','sw-bg','hx-bg',S.bc],['cp-mc','sw-mc','hx-mc',S.mc],['cp-sc','sw-sc','hx-sc',S.sc]]
+      .forEach(([inp, sw, hx, v]) => { $(inp).value = v; paintSwatch(sw, hx, v); });
+    setSwitch('sw-hidden', !!S.hidden); setSwitch('sw-labels', !!S.lbls); setSwitch('sw-bold', !!S.bold);
+    $('lbl-fields').classList.toggle('off', !S.lbls);
+    syncPicker('dot-grid', S.dot); syncPicker('corner-grid', S.corner);
+    setPos(S.pos); setFont(S.ff);
     showView('gen');
+    update();
     _editId = id;
     showToast('Settings loaded', 'ok');
-  } catch (err) {
-    showToast('Could not load entry', 'err');
-    console.error('loadFromHistory_byId:', err);
-  }
+  } catch (err) { console.error(err); showToast('Could not load entry', 'err'); }
 }
 
 function clearHistory() {
-  if (!confirm('Delete all saved QR codes?')) return;
-  saveHistory([]);
-  renderHistory();
+  if (!confirm('Delete all saved QR codes? This cannot be undone.')) return;
+  saveHistory([]); _editId = null; renderHistory();
 }
 
 function renderHistory() {
-  const hist = getHistory();
-  const grid = document.getElementById('hist-grid');
-  document.getElementById('hist-count').textContent = hist.length > 0 ? `(${hist.length})` : '';
-  document.getElementById('btn-clear-all').style.display = hist.length > 0 ? '' : 'none';
+  const hist = getHistory(), grid = $('hist-grid');
+  $('hist-count').textContent = hist.length ? `${hist.length} saved` : '';
+  $('btn-clear-all').style.display = hist.length ? '' : 'none';
+  updCount(hist.length);
   grid.innerHTML = '';
-  if (hist.length === 0) {
-    grid.innerHTML = `<div class="hist-empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="1.5" fill="currentColor" stroke="none"/><path d="M14 14h3v3"/></svg>
-      <h3>No saved QR codes yet</h3>
-      <p>Generate a QR code and click <strong>Save</strong><br>to keep it here for future use.</p></div>`;
+  if (!hist.length) {
+    grid.innerHTML = `<div class="hist-empty"><div class="big"><i class="fa-solid fa-qrcode"></i></div>
+      <h3>No saved QR codes yet</h3><p>Generate a code and hit <strong>Save</strong> to keep it here.</p>
+      <button class="btn btn-p" style="margin-top:18px" onclick="showView('gen')"><i class="fa-solid fa-plus"></i>Create one</button></div>`;
     return;
   }
   const secLabel = { WPA:'WPA2/3', WEP:'WEP', nopass:'Open' };
-  hist.forEach(entry => {
-    const id   = entry.id;
-    const card = document.createElement('div');
-    card.className = 'hist-card';
-
-    // Thumbnail — built with DOM so no onclick string serialisation
-    const thumb = document.createElement('div');
-    thumb.className = 'hist-thumb';
-    thumb.title = 'Click to load settings';
-    thumb.style.cursor = 'pointer';
-    if (entry.thumb) {
-      const img = new Image();
-      img.src = entry.thumb;
-      img.alt = 'QR — ' + entry.ssid;
-      img.style.cssText = 'width:100px;height:100px;border-radius:6px;display:block';
-      thumb.appendChild(img);
-    } else {
-      const ph = document.createElement('div');
-      ph.style.cssText = 'width:100px;height:100px;background:var(--hover);border-radius:6px';
-      thumb.appendChild(ph);
-    }
-    thumb.addEventListener('click', () => loadFromHistory_byId(id));
-
-    // Static body content
-    const body = document.createElement('div');
-    body.className = 'hist-body';
-    body.innerHTML = `
-      <div class="hist-name" title="${escH(entry.ssid)}">${escH(entry.ssid)}</div>
-      <div class="hist-meta">
-        <span class="hist-badge">${secLabel[entry.sec] || entry.sec}</span>
-        <span>${entry.savedAt}</span>
+  hist.forEach((entry, i) => {
+    const id = entry.id, card = document.createElement('article');
+    card.className = 'hist-card'; card.style.setProperty('--i', Math.min(i, 12));
+    card.innerHTML = `
+      <button type="button" class="hist-thumb" title="Load settings">
+        ${entry.thumb ? `<img src="${escH(entry.thumb)}" alt="QR for ${escH(entry.ssid)}">` : '<div style="width:110px;height:110px;border-radius:10px;background:var(--field-h)"></div>'}
+        <span class="hover-hint"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open</span>
+      </button>
+      <div class="hist-body">
+        <div class="hist-name" title="${escH(entry.ssid)}"><i class="fa-solid fa-wifi"></i>${escH(entry.ssid)}</div>
+        <div class="hist-meta"><span class="badge">${escH(secLabel[entry.sec] || entry.sec)}</span><span>${escH(entry.savedAt || '')}</span></div>
+        <div class="hist-actions">
+          <button type="button" class="btn" data-a="load"><i class="fa-solid fa-rotate-left"></i><span>Load</span></button>
+          <button type="button" class="btn btn-danger" data-a="del" aria-label="Delete"><i class="fa-solid fa-trash-can"></i><span>Delete</span></button>
+        </div>
       </div>`;
-
-    // Action buttons — addEventListener avoids large-int onclick serialisation issue
-    const acts = document.createElement('div');
-    acts.className = 'hist-actions';
-
-    const loadBtn = document.createElement('button');
-    loadBtn.className = 'btn btn-g';
-    loadBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 12a9 9 0 1 1 9 9"/><polyline points="3 3 3 12 12 12"/></svg> Load';
-    loadBtn.addEventListener('click', () => loadFromHistory_byId(id));
-
-    const delBtn = document.createElement('button');
-    delBtn.className = 'btn btn-danger';
-    delBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg> Delete';
-    delBtn.addEventListener('click', () => deleteFromHistory(id));
-
-    acts.appendChild(loadBtn);
-    acts.appendChild(delBtn);
-    body.appendChild(acts);
-    card.appendChild(thumb);
-    card.appendChild(body);
+    card.querySelector('.hist-thumb').onclick = () => loadFromHistory(id);
+    card.querySelector('[data-a=load]').onclick = () => loadFromHistory(id);
+    card.querySelector('[data-a=del]').onclick = () => deleteFromHistory(id, card);
     grid.appendChild(card);
   });
 }
 
 // ── TOAST ──
 let _toastTimer;
-function showToast(msg, type='info') {
+function showToast(msg, type = 'info') {
   let t = document.querySelector('.toast');
-  if (!t) { t = document.createElement('div'); t.className='toast'; document.body.appendChild(t); }
+  if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  const ico = { ok:'fa-circle-check', warn:'fa-triangle-exclamation', err:'fa-circle-xmark', info:'fa-circle-info' }[type];
   clearTimeout(_toastTimer);
-  t.textContent = msg;
-  t.className = 'toast' + (type !== 'info' ? ' '+type : '');
+  t.innerHTML = `<i class="fa-solid ${ico}"></i><span></span>`;
+  t.querySelector('span').textContent = msg;
+  t.className = 'toast ' + type;
   requestAnimationFrame(() => t.classList.add('show'));
-  _toastTimer = setTimeout(() => { t.classList.remove('show'); setTimeout(() => { if(t.parentNode) t.parentNode.removeChild(t); }, 300); }, 2800);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
 // ── PRINT ──
 function chPct(delta) {
-  const el = document.getElementById('print-pct');
+  const el = $('print-pct');
   el.value = Math.min(200, Math.max(40, (parseInt(el.value) || 100) + delta));
 }
 
 async function printQR() {
-  if (!S.ssid.trim()) { showToast('Enter a network name first', 'warn'); return; }
-  const pct   = Math.min(200, Math.max(40, parseInt(document.getElementById('print-pct').value) || 100));
-  const qty   = parseInt(document.getElementById('print-qty').value) || 1;
-  const stand = document.getElementById('print-stand').checked;
+  if (needSsid() || typeof QRCodeStyling === 'undefined') return;
+  chPct(0);
+  const pct = parseInt($('print-pct').value);
+  const qty = parseInt($('print-qty').value) || 1;
+  const stand = $('print-stand').checked;
   const sizeMM = Math.round(75 * pct / 100);
   showToast('Preparing print…');
   try {
-    const cSq = CORNERS.find(c => c.id === S.corner)?.sq || 'square';
-    const hiQR = new QRCodeStyling({
-      width:800, height:800, type:'canvas',
-      data: wifiStr(), margin: 0,
-      qrOptions:{ errorCorrectionLevel: S.ecc },
-      dotsOptions:{ color: S.dc, type: S.dot },
-      backgroundOptions:{ color: S.bc },
-      cornersSquareOptions:{ color: S.cc, type: cSq },
-      cornersDotOptions:{ color: S.cdc, type:'dot' }
-    });
-    const blob = await hiQR.getRawData('png');
-    const url  = URL.createObjectURL(blob);
-    const main = S.mt || S.ssid || '';
-    const fw   = S.bold ? '700' : '400';
-    const mSt  = `font-size:${S.msz}px;font-weight:${fw};color:${S.mc};font-family:${FF[S.ff]};`;
-    const sSt  = `font-size:${S.ssz}px;color:${S.sc};font-family:${FF[S.ff]};`;
-    const area = document.getElementById('print-area');
+    const hiQR = new QRCodeStyling(qrOptions(800, wifiStr()));
+    const url = URL.createObjectURL(await hiQR.getRawData('png'));
+    await loadImage(url); // decode once so every copy is ready
+    const main = S.ssid, fw = S.bold ? '700' : '400';
+    const mSt = `font-size:${S.msz}px;font-weight:${fw};color:${S.mc};font-family:${FF[S.ff]};`;
+    const sSt = `font-size:${S.ssz}px;color:${S.sc};font-family:${FF[S.ff]};`;
+    const area = $('print-area');
     area.innerHTML = '';
-    let loaded = 0;
-    const showAbove = S.lbls && (S.pos === 'above' || S.pos === 'both');
-    const showBelow = S.lbls && S.pos === 'below';
+    const add = (parent, cls, html, css) => { const d = document.createElement('div'); d.className = cls; if (html) d.innerHTML = html; if (css) d.style.cssText = css; parent.appendChild(d); return d; };
     for (let i = 0; i < qty; i++) {
-      const frame = document.createElement('div');
-      frame.className = 'pf';
-      if (showAbove) {
-        const d = document.createElement('div');
-        d.className = 'pf-above';
-        d.innerHTML = wifiLbl(main, S.mc, S.msz);
-        d.style.cssText = mSt;
-        frame.appendChild(d);
-        if (S.st) {
-          const s = document.createElement('div');
-          s.className = 'pf-sub';
-          s.textContent = S.st;
-          s.style.cssText = sSt;
-          frame.appendChild(s);
-        }
-      }
+      const frame = add(area, 'pf');
+      if (S.lbls && S.pos === 'both') add(frame, 'pf-above', wifiLbl(main, S.mc, S.msz), mSt);
       const img = document.createElement('img');
-      img.className = 'pf-qr';
-      img.alt = 'WiFi QR Code';
-      img.style.width = sizeMM + 'mm';
-      img.style.height = sizeMM + 'mm';
+      img.className = 'pf-qr'; img.alt = 'WiFi QR Code'; img.src = url;
+      img.style.width = img.style.height = sizeMM + 'mm';
       frame.appendChild(img);
-      if (showBelow) {
-        const d = document.createElement('div');
-        d.className = 'pf-below';
-        d.innerHTML = wifiLbl(main, S.mc, S.msz);
-        d.style.cssText = mSt;
-        frame.appendChild(d);
-        if (S.st) {
-          const s = document.createElement('div');
-          s.className = 'pf-sub';
-          s.textContent = S.st;
-          s.style.cssText = sSt;
-          frame.appendChild(s);
-        }
-      }
-      if (stand) {
-        const fold = document.createElement('div');
-        fold.className = 'pf-fold';
-        frame.appendChild(fold);
-        const standTab = document.createElement('div');
-        standTab.className = 'pf-stand';
-        frame.appendChild(standTab);
-        const fold2 = document.createElement('div');
-        fold2.className = 'pf-fold2';
-        frame.appendChild(fold2);
-        const tuck = document.createElement('div');
-        tuck.className = 'pf-tuck';
-        frame.appendChild(tuck);
-      }
-      area.appendChild(frame);
-      img.onload = () => {
-        loaded++;
-        if (loaded === qty) { window.print(); setTimeout(() => URL.revokeObjectURL(url), 1500); }
-      };
-      img.onerror = () => { showToast('Print image failed', 'err'); URL.revokeObjectURL(url); };
-      img.src = url;
+      if (S.lbls && S.pos === 'below') add(frame, 'pf-below', wifiLbl(main, S.mc, S.msz), mSt);
+      if (S.lbls && S.st) add(frame, 'pf-sub', '', sSt).textContent = S.st;
+      if (stand) ['pf-fold', 'pf-stand', 'pf-fold2', 'pf-tuck'].forEach(c => add(frame, c));
     }
-  } catch(e) { showToast('Print failed — try again', 'err'); }
+    setTimeout(() => { window.print(); setTimeout(() => URL.revokeObjectURL(url), 2000); }, 50);
+  } catch (e) { console.error(e); showToast('Print failed — try again', 'err'); }
 }
 
 // ── RESET ──
 function resetQR() {
-  document.getElementById('f-ssid').value = '';
-  document.getElementById('f-pw').value   = '';
-  document.getElementById('f-sec').value  = 'WPA';
-  document.getElementById('f-ecc').value  = 'M';
-  document.getElementById('f-st').value   = 'Scan to connect';
-  S.ssid=''; S.pw=''; S.sec='WPA'; S.ecc='M'; S.st='Scan to connect';
-  S.hidden=false; document.getElementById('sw-hidden').classList.remove('on');
+  $('f-ssid').value = ''; $('f-pw').value = '';
+  $('f-sec').value = 'WPA'; $('f-ecc').value = 'M';
+  $('f-st').value = 'Scan to connect';
+  S.hidden = false; setSwitch('sw-hidden', false);
   _editId = null;
   update();
-  showToast('Ready — enter a network name to begin', 'ok');
+  if (matchMedia('(max-width:860px)').matches) window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => $('f-ssid').focus({ preventScroll: true }), 300);
+  showToast('Ready — enter a network name', 'ok');
 }
 
 // ── THEME ──
+function applyTheme(light) {
+  document.body.classList.toggle('light', light);
+  $('theme-ico').className = 'fa-solid ' + (light ? 'fa-sun' : 'fa-moon');
+  document.querySelector('meta[name=theme-color]').content = light ? '#eef0f9' : '#07080f';
+}
 function toggleTheme() {
-  const light = document.body.classList.toggle('light');
-  const ico = document.getElementById('theme-ico');
-  ico.innerHTML = light
-    ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
-    : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
-  try { localStorage.setItem('wifiqr-theme', light ? 'light' : 'dark'); } catch(e) {}
+  const light = !document.body.classList.contains('light');
+  applyTheme(light);
+  try { localStorage.setItem('wifiqr-theme', light ? 'light' : 'dark'); } catch (e) {}
 }
 
+// ── MICRO-INTERACTIONS ──
+document.addEventListener('pointerdown', e => {
+  const b = e.target.closest('.btn,.new-btn');
+  if (!b) return;
+  const r = b.getBoundingClientRect(), s = document.createElement('span');
+  s.className = 'rip'; s.style.left = (e.clientX - r.left) + 'px'; s.style.top = (e.clientY - r.top) + 'px';
+  b.appendChild(s); setTimeout(() => s.remove(), 650);
+});
+// 3D tilt only for real mouse users
+if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(prefers-reduced-motion:reduce)').matches) {
+  const tilt = $('tilt'), card = $('pv-card'); let raf;
+  tilt.addEventListener('pointermove', e => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const r = tilt.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.style.transform = `rotateY(${(x - .5) * 12}deg) rotateX(${(.5 - y) * 12}deg) scale(1.02)`;
+      card.style.setProperty('--mx', x * 100 + '%'); card.style.setProperty('--my', y * 100 + '%');
+    });
+  });
+  tilt.addEventListener('pointerleave', () => { cancelAnimationFrame(raf); card.style.transform = ''; });
+}
+// iOS Safari ignores user-scalable=no; block pinch gestures explicitly
+document.addEventListener('gesturestart', e => e.preventDefault());
+
 // ── INIT ──
-buildPickers();
+(() => {
+  let saved = null;
+  try { saved = localStorage.getItem('wifiqr-theme'); } catch (e) {}
+  applyTheme(saved ? saved === 'light' : matchMedia('(prefers-color-scheme: light)').matches);
+})();
+buildPicker('dot-grid', DOTS, 'dot', '0 0 34 34');
+buildPicker('corner-grid', CORNERS, 'corner', '0 0 30 30');
 update();
-
-// Restore saved theme
-try {
-  if (localStorage.getItem('wifiqr-theme') === 'light') {
-    document.body.classList.add('light');
-    document.getElementById('theme-ico').innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
-  }
-} catch(e) {}
-
-// First visit guide
-try {
-  if (!localStorage.getItem('wifiqr-visited')) {
-    guideStep = 0;
-    renderGuideStep(0);
-    document.getElementById('guide').classList.remove('hidden');
-  }
-} catch(e) {}
+updCount(getHistory().length);
+try { if (!localStorage.getItem('wifiqr-visited')) openGuide(); } catch (e) {}
 </script>
 </body>
 </html>
